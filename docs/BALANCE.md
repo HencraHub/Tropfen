@@ -32,7 +32,7 @@ Koop abgestimmt 29.6 min vs nebeneinander 40.2 min = 0.74.
 | frostwart | 39.8 | 20/20 | frost (frost 20) |
 | tropfmeister | 26.6 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 31.5 | 20/20 | keile (keile 20) |
-| dampfkessel | 41.8 | 19/20 | dampf (dampf 20) |
+| dampfkessel | 39.0 | 20/20 | dampf (dampf 20) |
 | ingenieur | 25.7 | 20/20 | strahl (strahl 20) |
 | gaertner | 28.6 | 20/20 | wurzel (wurzel 20) |
 | haendler | 30.2 | 20/20 | tropfen (tropfen 20) |
@@ -52,7 +52,7 @@ Koop abgestimmt 22.4 min vs nebeneinander 23.6 min = 0.95.
 | frostwart | 35.0 | 20/20 | frost (frost 20) |
 | tropfmeister | 30.1 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 28.5 | 20/20 | keile (keile 20) |
-| dampfkessel | 49.8 | 20/20 | dampf (dampf 20) |
+| dampfkessel | 37.6 | 20/20 | dampf (dampf 20) |
 | ingenieur | 25.3 | 20/20 | strahl (strahl 20) |
 | gaertner | 30.3 | 20/20 | wurzel (wurzel 20) |
 | haendler | 30.0 | 20/20 | keile (keile 20) |
@@ -72,7 +72,7 @@ Koop abgestimmt 23.8 min vs nebeneinander 27.2 min = 0.87.
 | frostwart | 42.0 | 20/20 | frost (frost 20) |
 | tropfmeister | 43.9 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 39.3 | 20/20 | keile (keile 20) |
-| dampfkessel | 44.1 | 19/20 | dampf (dampf 20) |
+| dampfkessel | 38.5 | 20/20 | dampf (dampf 20) |
 | ingenieur | 27.9 | 20/20 | strahl (strahl 20) |
 | gaertner | 33.5 | 20/20 | wurzel (wurzel 20) |
 | haendler | 35.0 | 20/20 | thermoschock (thermoschock 20) |
@@ -92,7 +92,7 @@ Koop abgestimmt 31.7 min vs nebeneinander 41.9 min = 0.76.
 | frostwart | 35.0 | 20/20 | frost (frost 20) |
 | tropfmeister | 38.2 | 20/20 | frost (frost 20) |
 | keilschlaeger | 34.4 | 20/20 | keile (keile 18, frost 2) |
-| dampfkessel | 54.2 | 18/20 | dampf (dampf 19, frost 1) |
+| dampfkessel | 54.5 | 19/20 | dampf (dampf 19, frost 1) |
 | ingenieur | 41.9 | 20/20 | frost (frost 16, strahl 4) |
 | gaertner | 38.5 | 20/20 | wurzel (wurzel 15, frost 5) |
 | haendler | 35.4 | 20/20 | frost (frost 20) |
@@ -112,7 +112,7 @@ Koop abgestimmt 30.6 min vs nebeneinander 31.5 min = 0.97.
 | frostwart | 40.4 | 20/20 | frost (frost 20) |
 | tropfmeister | 35.8 | 20/20 | tropfen (tropfen 16, frost 4) |
 | keilschlaeger | 36.8 | 20/20 | keile (keile 19, frost 1) |
-| dampfkessel | 67.1 | 16/20 | dampf (dampf 19, frost 1) |
+| dampfkessel | 65.1 | 18/20 | dampf (dampf 20) |
 | ingenieur | 40.5 | 20/20 | strahl (frost 7, strahl 13) |
 | gaertner | 32.7 | 20/20 | wurzel (wurzel 20) |
 | haendler | 39.5 | 20/20 | tropfen (frost 8, tropfen 12) |
@@ -132,7 +132,7 @@ Koop abgestimmt 32.6 min vs nebeneinander 28.9 min = 1.13.
 | frostwart | 35.3 | 20/20 | frost (frost 20) |
 | tropfmeister | 34.1 | 20/20 | frost (tropfen 6, frost 14) |
 | keilschlaeger | 33.2 | 20/20 | keile (keile 20) |
-| dampfkessel | 64.2 | 18/20 | dampf (dampf 18, frost 2) |
+| dampfkessel | 62.5 | 19/20 | dampf (dampf 20) |
 | ingenieur | 36.3 | 20/20 | frost (frost 14, strahl 6) |
 | gaertner | 32.2 | 20/20 | wurzel (wurzel 20) |
 | haendler | 35.4 | 20/20 | frost (frost 20) |
@@ -152,7 +152,7 @@ Koop abgestimmt 29.2 min vs nebeneinander 29.0 min = 1.01.
 | frostwart | 42.2 | 20/20 | frost (frost 20) |
 | tropfmeister | 44.1 | 20/20 | frost (tropfen 6, frost 14) |
 | keilschlaeger | 41.6 | 20/20 | keile (keile 18, frost 2) |
-| dampfkessel | 65.1 | 17/20 | dampf (dampf 19, frost 1) |
+| dampfkessel | 58.4 | 17/20 | dampf (dampf 18, frost 2) |
 | ingenieur | 43.4 | 20/20 | strahl (strahl 16, frost 4) |
 | gaertner | 35.8 | 20/20 | wurzel (wurzel 20) |
 | haendler | 46.5 | 20/20 | thermoschock (thermoschock 20) |
@@ -172,7 +172,7 @@ Koop abgestimmt 35.4 min vs nebeneinander 35.3 min = 1.00.
 | frostwart | 39.3 | 20/20 | frost (frost 20) |
 | tropfmeister | 43.2 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 30.5 | 20/20 | keile (keile 20) |
-| dampfkessel | 31.6 | 20/20 | dampf (dampf 20) |
+| dampfkessel | 32.8 | 20/20 | dampf (dampf 20) |
 | ingenieur | 33.1 | 20/20 | strahl (strahl 20) |
 | gaertner | 53.6 | 20/20 | wurzel (wurzel 20) |
 | haendler | 50.1 | 20/20 | thermoschock (thermoschock 20) |
@@ -192,7 +192,7 @@ Koop abgestimmt 28.6 min vs nebeneinander 41.7 min = 0.68.
 | frostwart | 63.9 | 15/20 | frost (frost 18, thermoschock 2) |
 | tropfmeister | 25.5 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 31.4 | 20/20 | keile (keile 20) |
-| dampfkessel | 44.0 | 19/20 | dampf (dampf 20) |
+| dampfkessel | 41.8 | 19/20 | dampf (dampf 20) |
 | ingenieur | 30.4 | 20/20 | strahl (strahl 20) |
 | gaertner | 38.0 | 20/20 | wurzel (wurzel 20) |
 | haendler | 32.1 | 20/20 | tropfen (tropfen 20) |
@@ -212,7 +212,7 @@ Koop abgestimmt 21.6 min vs nebeneinander 23.8 min = 0.91.
 | frostwart | 54.5 | 17/20 | frost (frost 19, thermoschock 1) |
 | tropfmeister | 27.5 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 27.4 | 20/20 | keile (keile 20) |
-| dampfkessel | 52.3 | 16/20 | dampf (dampf 20) |
+| dampfkessel | 47.4 | 19/20 | dampf (dampf 20) |
 | ingenieur | 29.6 | 20/20 | strahl (strahl 20) |
 | gaertner | 38.1 | 20/20 | wurzel (wurzel 20) |
 | haendler | 30.0 | 20/20 | keile (keile 20) |
@@ -232,7 +232,7 @@ Koop abgestimmt 22.2 min vs nebeneinander 26.0 min = 0.85.
 | frostwart | 72.1 | 12/20 | frost (frost 16, thermoschock 1, none 3) |
 | tropfmeister | 45.7 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 36.5 | 20/20 | keile (keile 20) |
-| dampfkessel | 46.4 | 18/20 | dampf (dampf 19, none 1) |
+| dampfkessel | 35.4 | 20/20 | dampf (dampf 20) |
 | ingenieur | 32.1 | 20/20 | strahl (strahl 20) |
 | gaertner | 40.7 | 20/20 | wurzel (wurzel 20) |
 | haendler | 47.9 | 20/20 | thermoschock (thermoschock 20) |
@@ -240,7 +240,7 @@ Koop abgestimmt 22.2 min vs nebeneinander 26.0 min = 0.85.
 | coop_abgestimmt | 31.0 | 20/20 | tropfen (tropfen 20) |
 | coop_nebeneinander | 44.3 | 20/20 | tropfen (tropfen 20) |
 
-Bestzeit 32.1 min (ingenieur); innerhalb 20 %: keilschlaeger=keile, ingenieur=strahl → 2 Methoden.
+Bestzeit 32.1 min (ingenieur); innerhalb 20 %: keilschlaeger=keile, dampfkessel=dampf, ingenieur=strahl → 3 Methoden.
 Planlos: 90.0 min = 2.80 × Bestzeit.
 Koop abgestimmt 31.0 min vs nebeneinander 44.3 min = 0.70.
 
@@ -252,16 +252,16 @@ Koop abgestimmt 31.0 min vs nebeneinander 44.3 min = 0.70.
 | frostwart | 74.2 | 12/20 | frost (frost 20) |
 | tropfmeister | 47.2 | 20/20 | tropfen (frost 6, tropfen 14) |
 | keilschlaeger | 34.5 | 20/20 | keile (keile 19, frost 1) |
-| dampfkessel | 28.8 | 20/20 | dampf (dampf 20) |
+| dampfkessel | 29.5 | 20/20 | dampf (dampf 20) |
 | ingenieur | 53.7 | 20/20 | strahl (strahl 20) |
 | gaertner | 43.5 | 20/20 | wurzel (wurzel 20) |
-| haendler | 32.8 | 20/20 | dampf (dampf 20) |
+| haendler | 31.4 | 20/20 | dampf (dampf 20) |
 | planlos | 90.0 | 0/20 | frost (frost 20) |
 | coop_abgestimmt | 32.6 | 20/20 | keile (keile 20) |
 | coop_nebeneinander | 49.9 | 20/20 | tropfen (frost 4, tropfen 16) |
 
-Bestzeit 28.8 min (dampfkessel); innerhalb 20 %: hitzkopf=thermoschock, keilschlaeger=keile, dampfkessel=dampf, haendler=dampf → 3 Methoden.
-Planlos: 90.0 min = 3.13 × Bestzeit.
+Bestzeit 28.8 min (hitzkopf); innerhalb 20 %: hitzkopf=thermoschock, keilschlaeger=keile, dampfkessel=dampf, haendler=dampf → 3 Methoden.
+Planlos: 90.0 min = 3.12 × Bestzeit.
 Koop abgestimmt 32.6 min vs nebeneinander 49.9 min = 0.65.
 
 ## steppe/kalkstein
@@ -272,7 +272,7 @@ Koop abgestimmt 32.6 min vs nebeneinander 49.9 min = 0.65.
 | frostwart | 77.4 | 10/20 | frost (frost 20) |
 | tropfmeister | 36.8 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 36.1 | 20/20 | keile (keile 20) |
-| dampfkessel | 39.8 | 20/20 | dampf (dampf 20) |
+| dampfkessel | 33.1 | 20/20 | dampf (dampf 20) |
 | ingenieur | 47.9 | 20/20 | strahl (strahl 20) |
 | gaertner | 33.3 | 20/20 | wurzel (wurzel 20) |
 | haendler | 39.2 | 20/20 | tropfen (tropfen 20) |
@@ -280,8 +280,8 @@ Koop abgestimmt 32.6 min vs nebeneinander 49.9 min = 0.65.
 | coop_abgestimmt | 29.5 | 20/20 | keile (keile 18, tropfen 1, frost 1) |
 | coop_nebeneinander | 35.9 | 20/20 | tropfen (tropfen 20) |
 
-Bestzeit 33.3 min (gaertner); innerhalb 20 %: tropfmeister=tropfen, keilschlaeger=keile, dampfkessel=dampf, gaertner=wurzel, haendler=tropfen → 4 Methoden.
-Planlos: 90.0 min = 2.70 × Bestzeit.
+Bestzeit 33.1 min (dampfkessel); innerhalb 20 %: tropfmeister=tropfen, keilschlaeger=keile, dampfkessel=dampf, gaertner=wurzel, haendler=tropfen → 4 Methoden.
+Planlos: 90.0 min = 2.72 × Bestzeit.
 Koop abgestimmt 29.5 min vs nebeneinander 35.9 min = 0.82.
 
 ## steppe/sandstein
@@ -292,7 +292,7 @@ Koop abgestimmt 29.5 min vs nebeneinander 35.9 min = 0.82.
 | frostwart | 63.3 | 16/20 | frost (frost 20) |
 | tropfmeister | 36.6 | 20/20 | tropfen (tropfen 20) |
 | keilschlaeger | 30.7 | 20/20 | keile (keile 20) |
-| dampfkessel | 41.3 | 20/20 | dampf (dampf 20) |
+| dampfkessel | 35.7 | 20/20 | dampf (dampf 20) |
 | ingenieur | 46.6 | 20/20 | strahl (strahl 20) |
 | gaertner | 32.4 | 20/20 | wurzel (wurzel 20) |
 | haendler | 31.6 | 20/20 | keile (keile 20) |
@@ -300,7 +300,7 @@ Koop abgestimmt 29.5 min vs nebeneinander 35.9 min = 0.82.
 | coop_abgestimmt | 25.8 | 20/20 | keile (keile 20) |
 | coop_nebeneinander | 34.2 | 20/20 | tropfen (frost 2, tropfen 18) |
 
-Bestzeit 30.7 min (keilschlaeger); innerhalb 20 %: tropfmeister=tropfen, keilschlaeger=keile, gaertner=wurzel, haendler=keile → 3 Methoden.
+Bestzeit 30.7 min (keilschlaeger); innerhalb 20 %: tropfmeister=tropfen, keilschlaeger=keile, dampfkessel=dampf, gaertner=wurzel, haendler=keile → 4 Methoden.
 Planlos: 90.0 min = 2.94 × Bestzeit.
 Koop abgestimmt 25.8 min vs nebeneinander 34.2 min = 0.76.
 
@@ -312,15 +312,15 @@ Koop abgestimmt 25.8 min vs nebeneinander 34.2 min = 0.76.
 | frostwart | 77.9 | 11/20 | frost (frost 20) |
 | tropfmeister | 56.7 | 19/20 | tropfen (tropfen 19, frost 1) |
 | keilschlaeger | 41.6 | 20/20 | keile (keile 20) |
-| dampfkessel | 36.5 | 19/20 | dampf (dampf 20) |
+| dampfkessel | 33.1 | 20/20 | dampf (dampf 20) |
 | ingenieur | 51.8 | 20/20 | strahl (strahl 20) |
 | gaertner | 35.4 | 20/20 | wurzel (wurzel 20) |
-| haendler | 41.7 | 20/20 | dampf (dampf 20) |
+| haendler | 36.7 | 20/20 | dampf (dampf 20) |
 | planlos | 90.0 | 0/20 | frost (frost 20) |
 | coop_abgestimmt | 38.2 | 20/20 | keile (keile 20) |
 | coop_nebeneinander | 57.5 | 20/20 | tropfen (tropfen 19, frost 1) |
 
-Bestzeit 31.9 min (hitzkopf); innerhalb 20 %: hitzkopf=thermoschock, dampfkessel=dampf, gaertner=wurzel → 3 Methoden.
+Bestzeit 31.9 min (hitzkopf); innerhalb 20 %: hitzkopf=thermoschock, dampfkessel=dampf, gaertner=wurzel, haendler=dampf → 3 Methoden.
 Planlos: 90.0 min = 2.82 × Bestzeit.
 Koop abgestimmt 38.2 min vs nebeneinander 57.5 min = 0.66.
 
@@ -330,10 +330,10 @@ Abgestimmtes Paar im Mittel 29.1 min, unabgestimmtes Paar 35.7 min → Verhältn
 
 ## Schnellster Bot je Kombination
 
-- hitzkopf: 2/16 (13 %)
+- hitzkopf: 3/16 (19 %)
 - ingenieur: 4/16 (25 %)
 - keilschlaeger: 4/16 (25 %)
-- gaertner: 4/16 (25 %)
+- gaertner: 3/16 (19 %)
 - tropfmeister: 1/16 (6 %)
 - dampfkessel: 1/16 (6 %)
 
@@ -342,4 +342,3 @@ Abgestimmtes Paar im Mittel 29.1 min, unabgestimmtes Paar 35.7 min → Verhältn
 Verstöße:
 
 - (a) kueste/kalkstein: nur 2 verschiedene Hauptmethoden innerhalb 20 % der Bestzeit (tropfmeister:tropfen, ingenieur:strahl)
-- (a) kueste/basalt: nur 2 verschiedene Hauptmethoden innerhalb 20 % der Bestzeit (keilschlaeger:keile, ingenieur:strahl)

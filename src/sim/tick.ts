@@ -623,7 +623,7 @@ function updateStone(state: GameState, rng: Rng): void {
       z.streak++;
       const mult = 1 + m.tropfen.streakMult * Math.min(1, z.streak / (m.tropfen.streakFull * 10));
       const rate = Math.min(z.drip, dripCap);
-      const salt = land.salt && (st.rock === 'kalkstein' || st.rock === 'sandstein') ? 1.1 : 1;
+      const salt = land.salt && (st.rock === 'kalkstein' || st.rock === 'sandstein') ? m.tropfen.saltBonus : 1;
       const second = dripRank[0] !== i ? m.tropfen.secondDrip : 1; // Doppeltropf: the second drip point works at reduced strength
       add('tropfen', i, m.tropfen.k * rock.sus.tropfen * rate * mult * (m.tropfen.wetBase + z.wet) * salt * second * DT);
     } else z.streak = 0;

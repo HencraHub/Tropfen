@@ -77,7 +77,7 @@ Der Gesamtschaden pro Tick ist die Summe aller Methoden; die Statistik führt de
 ### 4.3 Steter Tropfen
 - Ein Zufluss (Rinne/Rohr/Tank-Auslass/Eimerkette) an einer Tropfstelle mit Rate `r` (L/s), erst nach Forschung „Tropfstelle“. Zählt nur bis `cap` (0,4 L/s; Feinjustierung 0,7); ohne Doppeltropf zählt nur die stärkste Zone, mit Doppeltropf zwei.
 - Strähne `streak` (Ticks) wächst, solange `r ≥ 0,05`; sonst 0. `m = 1 + 2 · min(1, streak / 6000)`.
-- `dmg = kD(17) · susD · min(r, cap) · m · (0,5 + wet) · (Salz auf Kalk/Sandstein 1,1) · (zweite Tropfstelle 0,6)` je Sekunde
+- `dmg = kD(17) · susD · min(r, cap) · m · (0,5 + wet) · (Salzbonus `saltBonus`, derzeit 1,0) · (zweite Tropfstelle 0,6)` je Sekunde
 - Stärke: billig, kein Timing, vom Wetter fast unabhängig. Schwäche: braucht Infrastruktur mit Gefälle oder Energie, jede Unterbrechung (Wartung, Dürre, Frost in der Rinne) wirft die Strähne auf 0. Konter: Sturm (Rinnenschaden), Dürre, Salz (Kalk profitiert, Pumpen leiden). Synergie: Zisterne als Puffer, Frost (Risse bleiben gefüllt), Wurzeln (Feuchte).
 
 ### 4.4 Quellkeile

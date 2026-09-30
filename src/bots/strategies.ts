@@ -299,7 +299,7 @@ export const keilschlaeger: Strategy = {
     // scarce water: three soaked zones beat six half-wet ones; the best zones are weak spots on the line
     const need = wedgeOrder(c, c.scarceWater() ? 3 : 8);
     c.mem.keepTargets = true;
-    c.ensureCarriers(3, { kind: 'zone', zone: la });
+    c.ensureCarriers(c.scarceWater() ? 3 : 4, { kind: 'zone', zone: la });
     const withWedges = need.filter((z) => c.zone(z).wedges > 0);
     spreadCarriers(c, (withWedges.length > 0 ? withWedges : [la, lb]).map((z) => ({ kind: 'zone', zone: z }) as WaterTarget));
     c.researchPlan(['bohrer', 'quellkeile']);
@@ -319,7 +319,7 @@ export const keilschlaeger: Strategy = {
       if (dry !== undefined && !c.buildRoute({ kind: 'zone', zone: dry }) && !c.planRoute({ kind: 'zone', zone: dry })) c.researchPlan(['rohrguss', 'pumpwerk']);
     }
     c.researchPlan(['bohrtrupp']);
-    if (c.has('bohrtrupp') && c.workersDoing('drill') + c.workersDoing('wedges') < 2) {
+    if (c.has('bohrtrupp') && c.workersDoing('drill') + c.workersDoing('wedges') < (c.money > 400 ? 3 : 2) && need.some((z) => c.zone(z).holes < maxW)) {
       const z = need.find((zz) => c.zone(zz).holes < maxW);
       if (z !== undefined) c.hire('bohrtrupp', { type: 'drill', zone: z, deep: false });
     }

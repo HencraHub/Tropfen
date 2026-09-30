@@ -29,7 +29,8 @@
     "streakFull": 600,
     "streakMult": 2,
     "wetBase": 0.5,
-    "secondDrip": 0.6
+    "secondDrip": 0.6,
+    "saltBonus": 1.0
   },
   "keile": {
     "k": 2.3,
