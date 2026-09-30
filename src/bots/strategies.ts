@@ -155,6 +155,7 @@ export const frostwart: Strategy = {
     if (opening(c, (c.mem.loan as number | undefined) ?? 250, ['frostnacht', 'dichte_rinnen', 'quellrecht', 'zaeher_traeger'])) return;
     const land = landscapeDef(c.state.landscape);
     const [la, lb] = c.lineZones();
+    c.ensureEnergy(); // pumped pipes stand still without a treadmill or wheel
     const coldNights = land.climate.night <= -2;
     // water in the cracks drains while the stone is above 15 °C and is spent once the zone froze:
     // with a cistern the line is flooded only in the cool window before the freeze, without one from the afternoon on
@@ -174,6 +175,10 @@ export const frostwart: Strategy = {
     if (!zi) { coreRoute(c, { kind: 'zone', zone: la }); c.researchPlan(['rinnenbau']); if (c.has('rinnenbau')) c.build('zisterne', undefined, tankPos(c, la)); }
     else {
       if (!c.hasRoute({ kind: 'building', id: zi.id })) coreRoute(c, { kind: 'building', id: zi.id });
+      else if (c.money > 600 && c.state.sources.some((q) => q.unlocked && q.storeCap >= 100000) && c.routes({ kind: 'building', id: zi.id }).every((r) => (c.state.sources.find((q) => q.id === r.from)?.storeCap ?? 0) < 100000)) {
+        // frost eats water: once rich, a pumped pipe from the big source (sea, river) fills the cistern instead of the little well
+        if (!c.buildRoute({ kind: 'building', id: zi.id }) && !c.planRoute({ kind: 'building', id: zi.id })) c.researchPlan(['rohrguss', 'pumpwerk']);
+      }
       const capNow = content.methods.frost.capBase + content.methods.frost.capPerProgress * c.progress;
       const outZone = c.zone(la).fill >= capNow - 5 || c.zone(la).fill > c.zone(lb).fill + 40 ? lb : la;
       const rate = fillTime && zi.active && cool(outZone) ? 8 : 0;
@@ -284,7 +289,8 @@ export const keilschlaeger: Strategy = {
     const la = shadyLineZone(c), lb = (la + 4) % 8;
     const land = landscapeDef(c.state.landscape);
     const maxW = content.methods.keile.maxWedges;
-    const need = [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8];
+    // scarce water: six half-wet wedge zones lose to two soaked line zones (off-line zones count 50 % anyway)
+    const need = c.scarceWater() ? [la, lb] : [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8];
     c.mem.keepTargets = true;
     c.ensureCarriers(3, { kind: 'zone', zone: la });
     const withWedges = need.filter((z) => c.zone(z).wedges > 0);
@@ -298,6 +304,7 @@ export const keilschlaeger: Strategy = {
     if (hub) { coreRoute(c, { kind: 'building', id: hub.id }); if (!hub.out || hub.out.zone !== la || Math.abs(hub.out.rate - 0.3) > 0.01) c.setOut(hub.id, la, 0.3); }
     else if (!scarce) coreRoute(c, { kind: 'zone', zone: la });
     shadeLine(c, c.money > 400 ? need.filter((z) => c.zone(z).wedges > 0 || z === la || z === lb) : [la, lb]);
+    c.dewNets(hub ? 4 : 0, la); // steppe: every drop counts, dew nets at the stone add to the well
     if (!hub && c.money > 350 && !c.hasRoute({ kind: 'zone', zone: lb })) c.buildRoute({ kind: 'zone', zone: lb });
     if (!hub && c.money > 600 && c.state.routes.length < 4) {
       // rich and the water is free: a channel to the wedge zone whose wedges stay driest
@@ -323,7 +330,7 @@ export const keilschlaeger: Strategy = {
     if (c.repairWorst(0.45)) return;
     const la = shadyLineZone(c), lb = (la + 4) % 8;
     const maxW = content.methods.keile.maxWedges;
-    const order = [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8, (la + 2) % 8, (lb + 2) % 8];
+    const order = c.scarceWater() ? [la, lb] : [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8, (la + 2) % 8, (lb + 2) % 8];
     if (c.hasTool('bohrer')) {
       if (c.has('quellkeile') && c.wood >= 1) { const wz = order.find((z) => c.zone(z).wedges < c.zone(z).holes); if (wz !== undefined) { c.wedge(wz); return; } }
       const dz = order.find((z) => c.zone(z).holes < maxW && (z % 4 === c.state.stone.line || c.progress > 0.08));
@@ -335,7 +342,7 @@ export const keilschlaeger: Strategy = {
     const lpw = content.methods.keile.litersPerWedge;
     const wedgeZones = order.filter((z) => c.zone(z).wedges > 0);
     if (wedgeZones.length > 0 && c.p.carry > 0 && c.pourWhereNeeded(wedgeZones, (z) => (1 - c.zone(z).wedgeWet) * lpw * c.zone(z).wedges + 1)) return;
-    const hub = c.scarceWater() ? c.waterHub(la) : undefined;
+    const hub = c.scarceWater() ? c.fullestTank(la) : undefined;
     if (hub && c.hubLoop(hub, best)) return;
     c.carryLoop({ kind: 'zone', zone: best });
   },
@@ -408,7 +415,7 @@ export const ingenieur: Strategy = {
     const [la, lb] = c.lineZones();
     const land = landscapeDef(c.state.landscape);
     c.mem.keepTargets = true;
-    c.ensureCarriers(c.hasRoute({ kind: 'zone', zone: la }) ? 2 : 3, { kind: 'zone', zone: la });
+    c.ensureCarriers(c.hasRoute({ kind: 'zone', zone: la }) ? 2 : ((c.mem.carriers as number | undefined) ?? 4), { kind: 'zone', zone: la }); // the jet is expensive: four carriers pay it off sooner
     // once the jet stands, its feed comes before everything else (a pipe on the steppe costs more than the research left)
     const sw0 = c.building('strahlwerk');
     if (sw0 && !c.hasRoute({ kind: 'building', id: sw0.id })) {

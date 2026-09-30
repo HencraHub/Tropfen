@@ -292,6 +292,25 @@ export class BotCtx {
     else { this.researchPlan(['rinnenbau']); if (this.has('rinnenbau')) this.build('zisterne', undefined, pos); } // 1000 L buffer while the player is busy elsewhere
     return undefined;
   }
+  /** Dew nets (steppe) or rain catchers: cheap collectors at the stone, up to `n`, once the economy runs. */
+  dewNets(n: number, nearZone: number): void {
+    if (n <= 0) return;
+    const land = landscapeDef(this.state.landscape);
+    const dew = this.state.sources.find((s) => s.kind === 'tau');
+    if (!dew || dew.reliability < 0.5) return;
+    const have = this.state.buildings.filter((b) => b.type === 'taunetz').length;
+    if (have >= n || this.money < 250) return;
+    const a = ((nearZone + 0.5 + have * 0.6) / 8) * Math.PI * 2, r = this.state.stone.radius + 7;
+    this.build('taunetz', undefined, { x: Math.sin(a) * r, z: Math.cos(a) * r });
+    void land;
+  }
+  /** The fullest tank at the stone (hub, barrel, dew net, rain catcher) with at least a load in it. */
+  fullestTank(nearZone: number) {
+    const hub = this.waterHub(nearZone);
+    let best = hub && hub.active ? hub : undefined;
+    for (const b of this.state.buildings) if ((b.type === 'taunetz' || b.type === 'regenfang') && b.active && b.liters >= Math.min(this.carryCap(), 10) && (!best || b.liters > best.liters)) best = b;
+    return best;
+  }
   /** The tank standing at a zone (hub), if any – no building. */
   tankAt(zone: number) {
     const a = (zone / 8) * Math.PI * 2, r = this.state.stone.radius + 5;

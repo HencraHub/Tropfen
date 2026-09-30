@@ -50,3 +50,8 @@ Sobald der Tropfmeister für die zweite Tropfstelle ein Pumprohr aus Fluss oder 
 
 ## 2026-09-30 Koop-Team: Arbeitsteilung statt zwei Tropfmeister
 Seit beide unabgestimmten Tropfmeister Pumpleitungen legen, waren sie so schnell wie das Team (Regel d verletzt). Das Team teilt jetzt wirklich die Arbeit: A führt die Tropfwirtschaft (Eröffnung, Darlehen, beide Tropfstellen), B bohrt und keilt auf derselben Linie, wässert die Keile aus A's Zisterne, führt bei ergiebiger naher Quelle die Eimerkette und gießt mit A synchron auf die heißeste Linienzone. Zwei Methoden auf einer Linie statt zweimal dieselbe – das ist der Koop-Vorteil, den der Kern belohnt (nur zwei Tropfzonen zählen).
+
+## 2026-09-30 Runde 4: Konzentration statt Streuung
+- Keilschläger bei knappem Wasser (Steppe, Hochland): Keile nur auf den zwei Linienzonen statt auf sechs halbnassen (Steppe/Granit 40 → 37 min, Hochland/Basalt 44 → 38). Für den Gärtner gilt das nicht: Bäume verlieren kein Wasser, mehr Bäume sind mehr Schaden (getestet, verworfen).
+- Wurzel k 6,2 → 5,8 (Rücknahme des Boosts vom Vormittag: der Gärtner war nach Wasserspeicher und Teilgüssen in 31 % der Kombinationen der Schnellste), Tropfen k 18 → 17. Beide Konstanten wirken kaum auf die Bestzeit, weil Aufbau und Strähne dominieren; sie bleiben dennoch, weil die Verhältnisse stimmen sollen.
+- Ingenieur: vier Träger statt drei, das Strahlwerk (900) kommt früher. Taunetze für den Keilschläger auf der Steppe (kein messbarer Gewinn, bleibt als Spielweise). Frostwart sichert Energie jeden Tick (Pumprohr zur Zisterne stand sonst still).

@@ -22,7 +22,7 @@
     "nachtwacheBonus": 1.3
   },
   "tropfen": {
-    "k": 18,
+    "k": 17,
     "cap": 0.4,
     "capFine": 0.7,
     "minRate": 0.05,
@@ -62,7 +62,7 @@
     "sand": 0.1
   },
   "wurzel": {
-    "k": 6.2,
+    "k": 5.8,
     "growPerHour": 0.04,
     "minProgress": 0.03,
     "shadePerGrowth": 0.2,
