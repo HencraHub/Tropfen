@@ -22,8 +22,8 @@ Regel für Regel (Auslegung in docs/ENTSCHEIDUNGEN.md, Schwellen unverändert):
 - gaertner: 3/16 (19 %)
 - tropfmeister: 1/16 (6 %)
 - dampfkessel: 1/16 (6 %)
-- (c) Der planlose Bot ist in jeder Kombination ≥ 30 % langsamer als der beste: er beendet keine Partie (90 min gewertet), Faktor 2,5–3,5.
-- (d) Abgestimmtes Koop-Paar ≥ 15 % schneller als das unabgestimmte: Abgestimmtes Paar im Mittel 29.1 min, unabgestimmtes Paar 35.9 min → Verhältnis 0.812 (Regel d: ≤ 0,85, Mittelwert über alle Kombinationen, siehe docs/ENTSCHEIDUNGEN.md).
+- (c) Der planlose Bot ist in jeder Kombination ≥ 30 % langsamer als der beste: er beendet keine der 320 Partien (Deckel 90 min gewertet), Faktor 2,5–3,55. Die Regel ist damit deutlich, aber nur über den Deckel erfüllt.
+- (d) Abgestimmtes Koop-Paar ≥ 15 % schneller als das unabgestimmte, gemessen als Mittelwert über alle 16 Kombinationen (Auslegung in docs/ENTSCHEIDUNGEN.md; der Auftrag nennt für (d) anders als für (a) und (c) keine Einzelkombination). Ehrlich dazu: je Kombination betrachtet läge das Paar in 7 von 16 Kombinationen nicht 15 % vorn, im Hochland ist es gleich schnell oder langsamer; auf Flusstal, Küste und Steppe liegt es 20–45 % vorn. Ergebnis: Abgestimmtes Paar im Mittel 29.1 min, unabgestimmtes Paar 35.9 min → Verhältnis 0.812 (Regel d: ≤ 0,85, Mittelwert über alle Kombinationen, siehe docs/ENTSCHEIDUNGEN.md).
 - (e) Bestzeiten Solo zwischen 25 und 45 min: 25,3 (Flusstal/Sandstein) bis 35,8 min (Hochland/Basalt).
 
 Kurztabelle (`python3 scripts/baltable.py`, Minuten, Kürzel der Hauptmethode):
@@ -73,11 +73,11 @@ Alle Bilder liegen in `docs/screenshots/` (1280×720, Headless-Chromium mit Soft
 | Stilprobe (Flusstal, Granit, 15 Uhr) | `stilprobe.png` | Wellpappe-Terrassen mit Kantenriffel, Stein als geknülltes Papier mit Tintenkontur, Wackelaugen und Pappbrauen, Sprechblase und Ratsvordruck in Strichschrift auf Papier mit Rand, Stempel „GEPRÜFT“, Kontaktschatten unter den Figuren, Sonne am Stab. |
 | Stilprobe bei Nacht (Steppe, Basalt, 20 Uhr) | `stilprobe-nacht.png` | Mond am Stab, kalte Lampe von links, warme Lampe aus, Stein bläulich getönt. |
 | Hauptmenü | `hauptmenue.png` | Papierkarten, Strichschrift, kein Systemfont. |
-| Frühphase (Flusstal, Kalkstein, Keilschläger) | `fruehphase.png` | Eimerträger als Hampelfiguren mit Wackelaugen, Perlen-Wasser, Rinnen aus Pappe, Vordrucke des Rats links. |
+| Frühphase (Flusstal, Kalkstein, Tag 1, 3 Uhr) | `fruehphase.png` | Nachtszene kurz nach dem Abklopfen: Stein noch ohne Riss (Riss 0,0 %), Zonenkarte „Zone 1 · Spaltlinie“ mit Schwachstelle ×2,1 auf Papier, roter Zielring, Hände aus Pappe unten, Terrassen und Dorf aus Wellpappe; Kredit 150 im Kopfbogen. Träger und Rinnen sind zu diesem Zeitpunkt noch nicht im Bild (sie kommen erst mit dem ersten Dorfgang). |
 | Mittelspiel je Methode | `mittelspiel-thermoschock.png`, `-frost.png`, `-tropfen.png`, `-keile.png`, `-dampf.png`, `-strahl.png`, `-wurzel.png` | Hochtank und Guss (Thermoschock), Eis in den Ritzen und Sonnensegel (Frost), Zisterne mit Auslass (Tropfen), Bohrlöcher und Keile (Keile), Feuerstelle mit Wattedampf (Dampf), Strahlwerk mit Windrad (Strahl), Setzlinge aus Papier (Wurzel); jeweils Rissbalken unten mit Methodenanteilen. |
 | Forschung, Bauen | `forschung.png`, `bauen.png` | Papierpaneele mit Strichschrift, Tastaturhinweise, kein Systemfont. |
 | Planungstisch | `planungstisch.png` | Draufsicht als Karte auf Papier, acht Zonen, Spaltlinie, Routen als Linien. |
-| Koop (3 Clients) | `e2e-koop.png` | Drei Figuren, Eimerkette, identischer Weltzustand (Hash im Test geprüft). |
+| Koop (3 Clients, Tag 9) | `e2e-koop.png` | Sicht eines der drei Clients (Team-Bot) im Zeitraffer: Nahaufnahme des Steins, Rinnen-Hinweis „Reparieren · Rinne 87 % · 1,38 L/s“, Zisterne aus Pappe, Ratsvordrucke (Dürre, Vergünstigung), 17 Arbeiter im Kopfbogen, Riss 22 % (Quellkeile 75 %, Thermoschock 25 % – also beide Rollen des Teams). Die anderen Spielerfiguren sind in diesem Bild nicht im Blick; der identische Weltzustand ist nicht am Bild, sondern im Test belegt (Tick und Hash aller drei Clients gleich, Resyncs 0). |
 | Rennen, Rangliste | `e2e-rennen.png`, `e2e-rangliste.png` | Zwei Steine nebeneinander, Rangliste als Papierliste. |
 | Finale | `finale.png` | Stein in zwei Hälften (Schnittebenen), Konfetti aus Papierschnipseln, Vollzugsmeldung des Rats. |
 | Ergebnis | `ergebnis.png`, `e2e-solo-ergebnis.png` | Ergebnisbogen als amtlicher Vordruck mit Stempel. |
