@@ -6,6 +6,7 @@ import { StoneView } from '../scene/stone';
 import { Figure, Hands } from '../scene/figures';
 import { buildSource, Beads, wobbleGroup } from '../scene/water';
 import { buildBuilding, type BuildingView } from '../scene/buildings';
+import { buildProps } from '../scene/props';
 import { PALETTE, paperMaterial, cottonTexture, inkOutline, wobbleEdges, contactShadow } from '../materials/paper';
 
 export interface Pick {
@@ -78,6 +79,7 @@ export class WorldView {
     houses.forEach((h, i) => { const b = buildBuilding(h, 100 + i); const a = (i / houses.length) * Math.PI * 2; const x = this.land.village[0] + Math.cos(a) * 7, z = this.land.village[1] + Math.sin(a) * 7; b.group.position.set(x, terrainHeight(this.land, x, z), z); b.group.rotation.y = -a + Math.PI / 2; b.update(0, 0, 1, {}); this.scene.add(b.group); this.buildings.set('village' + i, b); });
     const sign = buildBuilding('marktstand', 200); sign.group.position.copy(this.villagePos); sign.group.scale.setScalar(0.6); sign.update(0, 0, 1, {}); this.scene.add(sign.group); this.buildings.set('villageSign', sign);
     for (let i = 0; i < 16; i++) { const x = this.land.forest[0] + ((i * 37) % 30) - 15, z = this.land.forest[1] + ((i * 53) % 26) - 13; const t = buildBuilding('baum', i); t.group.position.set(x, terrainHeight(this.land, x, z), z); t.update(0, 0, 1, {}); this.scene.add(t.group); this.buildings.set('tree' + i, t); }
+    this.scene.add(buildProps(this.land, state.landscape));
     // zone marker ring on the stone
     this.zoneMarker = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.6, 24), new THREE.MeshBasicMaterial({ color: PALETTE.stempel, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthTest: false }));
     this.zoneMarker.rotation.x = -Math.PI / 2; this.zoneMarker.visible = false; this.zoneMarker.renderOrder = 5;
@@ -103,6 +105,7 @@ export class WorldView {
     const me = state.players.find((p) => p.id === localPid);
     const lookFrom = me ? new THREE.Vector3(me.pos.x, this.groundY(me.pos.x, me.pos.z) + 1.6, me.pos.z) : null;
     this.stone.update(dt, frame, state.stone.expression, state.stone.progress / state.stone.hp, state.stone.line, hot, lookFrom, this.hitScale);
+    this.stone.tintZones(state.stone.zones, frame);
     this.hitScale = Math.max(0, this.hitScale - dt);
     // players
     for (const p of state.players) {
@@ -158,8 +161,15 @@ export class WorldView {
       if (r.flow > 0.05 && this.particlesLevel > 0 && frame % 2 === 0) { const t = (timeSec * 0.5 + r.id.length) % 1; const p = this.pointOnRoute(r, t); this.beads.spawn(new THREE.Vector3(p.x, this.groundY(p.x, p.z) + 0.5, p.z), new THREE.Vector3(0, 0.5, 0), 0.4, 0.7); }
     }
     for (const [id, g] of this.routes) if (!state.routes.some((r) => r.id === id)) { this.scene.remove(g); this.routes.delete(id); }
-    // local player camera
-    if (me) {
+    // local player camera (or the finale orbit once the stone is split)
+    if (state.finished && this.splitT >= 0) {
+      const a = timeSec * 0.25;
+      const r = state.stone.radius * 3.2;
+      this.camera.position.set(Math.sin(a) * r, state.stone.radius * 1.4, Math.cos(a) * r);
+      this.camera.lookAt(0, state.stone.radius * 0.5, 0);
+      this.hands.group.visible = false;
+    } else if (me) {
+      this.hands.group.visible = true;
       const px = predicted ? predicted.x : me.pos.x, pz = predicted ? predicted.z : me.pos.z;
       const y = this.groundY(px, pz) + 1.65 + (me.stun > 0 ? -0.9 : 0);
       this.camera.position.set(px, y, pz);

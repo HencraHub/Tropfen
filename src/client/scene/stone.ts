@@ -23,6 +23,8 @@ export class StoneView {
   private lastProgressDrawn = -1;
   private lastLine = -1;
   private pupilSpring = { x: 0, y: 0, vx: 0, vy: 0 };
+  baseColor = new THREE.Color();
+  private lastTintFrame = -1;
 
   constructor(radius: number, rock: string, seed: number) {
     this.radius = radius;
@@ -39,13 +41,19 @@ export class StoneView {
     }
     geo.computeVertexNormals();
     const color = PALETTE.stein[rock] ?? PALETTE.stein.granit;
-    this.body = new THREE.Mesh(geo, paperMaterial(color, { seed: 31, roughness: 0.9 }));
+    this.baseColor = new THREE.Color(color).multiplyScalar(1.25);
+    const colors = new Float32Array(pos.count * 3);
+    for (let i = 0; i < pos.count; i++) { colors[i * 3] = this.baseColor.r; colors[i * 3 + 1] = this.baseColor.g; colors[i * 3 + 2] = this.baseColor.b; }
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const mat = paperMaterial('#ffffff', { seed: 31, roughness: 0.9 });
+    mat.vertexColors = true;
+    this.body = new THREE.Mesh(geo, mat);
     this.body.castShadow = true;
     this.body.receiveShadow = true;
     this.group.add(this.body);
-    this.outline = inkOutline(geo, 34);
+    this.outline = inkOutline(geo, 40);
     this.outline.userData.wobbleAmp = 0.02;
-    (this.outline.material as THREE.LineBasicMaterial).opacity = 0.55;
+    (this.outline.material as THREE.LineBasicMaterial).opacity = 0.35;
     this.group.add(this.outline);
     // eyes: on the -z side (towards the players' start)
     for (let i = 0; i < 2; i++) {
@@ -104,6 +112,27 @@ export class StoneView {
     }
     ctx.stroke();
     this.mouthTex.needsUpdate = true;
+  }
+
+  /** Tint the stone by zone: glowing orange when hot, frosty blue when freezing, darker when wet (8 Hz). */
+  tintZones(zones: { T: number; wet: number }[], frame: number): void {
+    if (frame === this.lastTintFrame) return;
+    this.lastTintFrame = frame;
+    const geo = this.body.geometry;
+    const pos = geo.getAttribute('position') as THREE.BufferAttribute;
+    const col = geo.getAttribute('color') as THREE.BufferAttribute;
+    const hot = new THREE.Color(PALETTE.glut), cold = new THREE.Color(PALETTE.frost), c = new THREE.Color();
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i), z = pos.getZ(i);
+      const zone = ((Math.round((Math.atan2(x, z) / (Math.PI * 2)) * zones.length) % zones.length) + zones.length) % zones.length;
+      const zz = zones[zone];
+      c.copy(this.baseColor);
+      if (zz.T > 45) c.lerp(hot, Math.min(0.55, (zz.T - 45) / 110));
+      else if (zz.T < 3) c.lerp(cold, Math.min(0.5, (3 - zz.T) / 16));
+      c.multiplyScalar(1 - zz.wet * 0.25);
+      col.setXYZ(i, c.r, c.g, c.b);
+    }
+    col.needsUpdate = true;
   }
 
   /** Update face, crack and sweat. `lookAt` is the world position of the local player. */

@@ -11,7 +11,7 @@ export interface Part { id: string; fallback: string; file: string | null; size:
 const loader = new THREE.TextureLoader();
 const cache = new Map<string, THREE.Texture>();
 
-export function parts(): Part[] { return (manifest as { parts: Part[] }).parts; }
+export function parts(): Part[] { return (manifest as unknown as { parts: Part[] }).parts; }
 
 function fallbackFor(p: Part): THREE.Texture {
   switch (p.fallback) {

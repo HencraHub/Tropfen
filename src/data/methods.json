@@ -12,7 +12,7 @@
     "spectacle": 15
   },
   "frost": {
-    "k": 45,
+    "k": 52,
     "fillFraction": 1.0,
     "capBase": 120,
     "capPerProgress": 300,
@@ -30,14 +30,14 @@
     "wetBase": 0.5
   },
   "keile": {
-    "k": 1.85,
+    "k": 2.1,
     "maxWedges": 6,
     "lineBonus": 1.5,
     "litersPerWedge": 8,
     "wetDecay": 0.35
   },
   "dampf": {
-    "k": 11,
+    "k": 9.5,
     "minT": 85,
     "minLiters": 10,
     "maxLiters": 60,
@@ -54,13 +54,13 @@
     }
   },
   "strahl": {
-    "k": 68,
+    "k": 76,
     "energy": 4,
     "water": 1.5,
     "sand": 0.1
   },
   "wurzel": {
-    "k": 5.4,
+    "k": 5.8,
     "growPerHour": 0.04,
     "minProgress": 0.03,
     "shadePerGrowth": 0.2,

@@ -26,7 +26,7 @@
     "sus": {
       "thermoschock": 0.7,
       "frost": 1.0,
-      "tropfen": 1.5,
+      "tropfen": 1.35,
       "keile": 1.0,
       "dampf": 0.8,
       "strahl": 1.2,
@@ -64,7 +64,7 @@
       "keile": 0.7,
       "dampf": 1.4,
       "strahl": 0.9,
-      "wurzel": 0.7
+      "wurzel": 0.8
     }
   }
 ]

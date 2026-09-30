@@ -623,7 +623,7 @@ function updateStone(state: GameState, rng: Rng): void {
       z.streak++;
       const mult = 1 + m.tropfen.streakMult * Math.min(1, z.streak / (m.tropfen.streakFull * 10));
       const rate = Math.min(z.drip, dripCap);
-      const salt = land.salt && (st.rock === 'kalkstein' || st.rock === 'sandstein') ? 1.2 : 1;
+      const salt = land.salt && (st.rock === 'kalkstein' || st.rock === 'sandstein') ? 1.1 : 1;
       add('tropfen', i, m.tropfen.k * rock.sus.tropfen * rate * mult * (m.tropfen.wetBase + z.wet) * salt * DT);
     } else z.streak = 0;
     z.drip = 0;
