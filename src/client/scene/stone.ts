@@ -32,9 +32,13 @@ export class StoneView {
     const pos = geo.getAttribute('position') as THREE.BufferAttribute;
     let s = seed;
     const rnd = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+    // the icosahedron is non-indexed: jitter per shared corner (keyed by position), else the facets drift apart and show gaps
+    const factor = new Map<string, number>();
     for (let i = 0; i < pos.count; i++) {
       const v = new THREE.Vector3().fromBufferAttribute(pos, i);
-      const f = 0.9 + rnd() * 0.14;
+      const key = `${v.x.toFixed(3)},${v.y.toFixed(3)},${v.z.toFixed(3)}`;
+      let f = factor.get(key);
+      if (f === undefined) { f = 0.9 + rnd() * 0.14; factor.set(key, f); }
       v.multiplyScalar(f);
       v.y *= 0.82;
       pos.setXYZ(i, v.x, v.y, v.z);

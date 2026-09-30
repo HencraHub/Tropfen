@@ -1,5 +1,5 @@
 import type { MethodId } from '../sim/index';
-import { landscapeDef, content } from '../sim/index';
+import { landscapeDef, content, dist } from '../sim/index';
 import { BotCtx, type WaterTarget } from './toolkit';
 
 export interface Strategy {
@@ -37,6 +37,13 @@ export function sunnyLineZone(c: BotCtx): number {
   return d(a) <= d(b) ? a : b;
 }
 
+/** Line zone on the shady side (closest to zone 0 = north): less evaporation for water methods. */
+export function shadyLineZone(c: BotCtx): number {
+  const [a, b] = c.lineZones();
+  const d = (z: number) => Math.min(z, 8 - z);
+  return d(a) <= d(b) ? a : b;
+}
+
 export function tankPos(c: BotCtx, zone: number) {
   const a = (zone / 8) * Math.PI * 2;
   const r = c.state.stone.radius + 5;
@@ -54,6 +61,14 @@ function spreadCarriers(c: BotCtx, targets: WaterTarget[]): void {
     const same = t.kind === tgt.kind && (t.kind === 'village' || (t.kind === 'zone' && t.zone === (tgt as { zone: number }).zone) || (t.kind === 'building' && t.id === (tgt as { id: string }).id));
     if (!same) c.assign(w.id, { type: 'carry', source: src, target: tgt });
   });
+}
+
+/** Hot landscapes (steppe): sun sails over the working zones keep wedges and cracks wet and roots alive. */
+function shadeLine(c: BotCtx, zones: number[]): void {
+  const land = landscapeDef(c.state.landscape);
+  if (land.climate.day * land.climate.sun < 30) return;
+  c.researchPlan(['sonnensegel']);
+  if (c.has('sonnensegel')) for (const z of zones) c.build('sonnensegel', z);
 }
 
 /** The route into the stone that every strategy wants first; blocks lower priorities while saving for it. */
@@ -137,22 +152,38 @@ export const frostwart: Strategy = {
   id: 'frostwart', main: 'frost',
   step(c) {
     keepReserve(c, 5);
-    if (opening(c, 150, ['frostnacht', 'dichte_rinnen', 'quellrecht', 'zaeher_traeger'])) return;
+    if (opening(c, (c.mem.loan as number | undefined) ?? 250, ['frostnacht', 'dichte_rinnen', 'quellrecht', 'zaeher_traeger'])) return;
     const land = landscapeDef(c.state.landscape);
     const [la, lb] = c.lineZones();
     const coldNights = land.climate.night <= -2;
+    // water in the cracks drains while the stone is above 15 °C and is spent once the zone froze:
+    // with a cistern the line is flooded only in the cool window before the freeze, without one from the afternoon on
+    const cool = (z: number) => c.zone(z).T < 15 && !c.zone(z).frozen;
+    const fillTime = c.building('zisterne') ? (c.hour >= 12 || c.hour < 5) && cool(la) : c.hour >= 13.5 || c.hour < 5;
     c.mem.keepTargets = true;
-    c.ensureCarriers(c.hasRoute({ kind: 'zone', zone: la }) ? 4 : 3, { kind: 'zone', zone: la });
-    // timing: water poured in the evening survives until the night frost; by day the carriers earn money
-    const fillTime = c.hour >= 13.5 || c.hour < 5;
-    const frostZones = fillTime ? [la, lb, (la + 1) % 8, (lb + 1) % 8, (la + 7) % 8, (lb + 7) % 8] : [la, lb];
-    spreadCarriers(c, frostZones.map((z) => ({ kind: 'zone', zone: z }) as WaterTarget));
-    coreRoute(c, { kind: 'zone', zone: la });
+    c.carryTools(c.has('eimerbau') ? 'tragjoch' : undefined);
+    c.ensureCarriers(3, { kind: 'zone', zone: la });
+    // timing: by day the carriers earn money in the village, from the afternoon on they fill the cracks
+    const ziDay = c.building('zisterne');
+    const dayTargets: WaterTarget[] = ziDay && ziDay.active && ziDay.liters < ziDay.cap * 0.95 ? [{ kind: 'building', id: ziDay.id }]
+      : c.hasRoute({ kind: 'zone', zone: la }) || ziDay ? [{ kind: 'village' }] : [{ kind: 'zone', zone: la }, { kind: 'zone', zone: lb }];
+    const frostZones: WaterTarget[] = [la, lb, (la + 1) % 8, (lb + 1) % 8, (la + 7) % 8, (lb + 7) % 8].map((z) => ({ kind: 'zone', zone: z }) as WaterTarget);
+    spreadCarriers(c, fillTime ? frostZones : dayTargets);
+    // water buffer: channel into a cistern by day, flood the line at dusk
+    const zi = c.building('zisterne');
+    if (!zi) { coreRoute(c, { kind: 'zone', zone: la }); c.researchPlan(['rinnenbau']); if (c.has('rinnenbau')) c.build('zisterne', undefined, tankPos(c, la)); }
+    else {
+      if (!c.hasRoute({ kind: 'building', id: zi.id })) coreRoute(c, { kind: 'building', id: zi.id });
+      const capNow = content.methods.frost.capBase + content.methods.frost.capPerProgress * c.progress;
+      const outZone = c.zone(la).fill >= capNow - 5 || c.zone(la).fill > c.zone(lb).fill + 40 ? lb : la;
+      const rate = fillTime && zi.active && cool(outZone) ? 8 : 0;
+      if (!zi.out || zi.out.zone !== outZone || Math.abs(zi.out.rate - rate) > 0.01) c.setOut(zi.id, outZone, rate);
+      if (c.money > 500 && c.state.buildings.filter((b) => b.type === 'zisterne').length < 2) c.build('zisterne', undefined, tankPos(c, lb));
+      for (const z2 of c.state.buildings.filter((b) => b.type === 'zisterne' && b.id !== zi.id)) { if (!c.hasRoute({ kind: 'building', id: z2.id })) c.buildRoute({ kind: 'building', id: z2.id }); const r2 = fillTime && z2.active && cool(lb) ? 8 : 0; if (!z2.out || z2.out.zone !== lb || Math.abs(z2.out.rate - r2) > 0.01) c.setOut(z2.id, lb, r2); }
+    }
     c.researchPlan(['sonnensegel']);
     if (c.has('sonnensegel')) { c.build('sonnensegel', la); c.build('sonnensegel', lb); }
     if (!coldNights) { c.researchPlan(['nachtwache', 'eiskeller']); if (c.has('eiskeller')) { c.build('eiskeller', la); c.build('eiskeller', lb); } }
-    if (c.money > 300 && !c.hasRoute({ kind: 'zone', zone: lb })) c.buildRoute({ kind: 'zone', zone: lb });
-    c.carryTools(c.has('eimerbau') ? 'tragjoch' : undefined);
     if (c.progress > 0.2 && c.has('sonnensegel')) for (const z of [la + 1, la + 7, lb + 1, lb + 7]) c.build('sonnensegel', z % 8);
     c.researchPlan(['schreibstube', 'nachtwache']);
     idleCarriersTo(c, { kind: 'zone', zone: la });
@@ -163,11 +194,13 @@ export const frostwart: Strategy = {
     const [la, lb] = c.lineZones();
     const p = c.progress;
     const cap = content.methods.frost.capBase + content.methods.frost.capPerProgress * p;
-    const fillTime = c.hour >= 13.5 || c.hour < 5;
-    if (!fillTime) { c.carryLoop({ kind: 'zone', zone: c.coldest([la, lb]) }, 'near'); return; }
+    const zi0 = c.building('zisterne');
+    const fillTime = zi0 ? (c.hour >= 12 || c.hour < 5) && c.zone(la).T < 15 && !c.zone(la).frozen : c.hour >= 13.5 || c.hour < 5;
+    if (!fillTime) { const zi = c.building('zisterne'); if (zi && zi.active && zi.liters < zi.cap * 0.95) c.carryLoop({ kind: 'building', id: zi.id }, 'near'); else c.carryLoop({ kind: 'village' }, 'near'); return; }
     const candidates = [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8];
     let best = la, bf = Infinity;
     for (const z of candidates) { const f = c.zone(z).fill / cap + (z % 4 === c.state.stone.line ? 0 : 0.5); if (f < bf) { bf = f; best = z; } }
+    if (zi0 && c.hubLoop(zi0, best)) return; // the cistern at the stone is the nearest water in the cool window
     c.carryLoop({ kind: 'zone', zone: best }, 'near');
   },
 };
@@ -177,27 +210,42 @@ export const tropfmeister: Strategy = {
   id: 'tropfmeister', main: 'tropfen',
   step(c) {
     keepReserve(c, 5);
-    if (opening(c, c.mem.noLoan ? 0 : 200, ['dichte_rinnen', 'quellrecht', 'ratsgunst', 'zaeher_traeger'])) return;
-    const [l0, l1] = c.lineZones();
+    if (opening(c, c.mem.noLoan ? 0 : ((c.mem.loan as number | undefined) ?? 200), ['dichte_rinnen', 'quellrecht', 'ratsgunst', 'zaeher_traeger'])) return;
+    const l0 = shadyLineZone(c), l1 = (l0 + 4) % 8;
     const la = c.mem.dripZone === 1 ? l1 : l0, lb = c.mem.dripZone === 1 ? l0 : l1;
     const r1: WaterTarget & { kind: 'zone' } = { kind: 'zone', zone: la };
     const r2: WaterTarget & { kind: 'zone' } = { kind: 'zone', zone: lb };
-    c.carryTools();
+    const scarce = c.scarceWater();
+    c.carryTools(scarce && c.has('eimerbau') ? 'karren' : undefined); // shuttling between barrels wants a cart
     if (!c.mem.noCarriers) c.ensureCarriers(c.hasRoute(r1) ? 1 : Math.min(3, (c.mem.maxCarriers as number | undefined) ?? 3), r1);
-    if (!coreRoute(c, r1)) return;
+    const cap = c.has('feinjustierung') ? content.methods.tropfen.capFine : content.methods.tropfen.cap;
+    if (scarce) {
+      // scarce source: the channel fills a barrel at the drip zone that drips at the cap; the surplus is shuttled by hand
+      const hub = c.waterHub(la, 'fass');
+      if (!hub) return;
+      if (hub.active && (!hub.out || hub.out.zone !== la || Math.abs(hub.out.rate - cap) > 0.01)) c.setOut(hub.id, la, cap);
+      if (!coreRoute(c, { kind: 'building', id: hub.id }) && !c.mem.noSecondRoute) return; // a team mate without a route slot still drips from a chain-fed barrel
+    } else if (!coreRoute(c, r1)) return;
     c.researchPlan(['tropfstelle']);
+    shadeLine(c, [la]);
     // buffer: cistern with outlet keeps the streak alive when the channel freezes or runs dry
     const zi = c.building('zisterne');
-    if (!zi && c.has('rinnenbau')) c.build('zisterne', undefined, tankPos(c, la));
-    if (zi && zi.active) {
-      if (!c.hasRoute({ kind: 'building', id: zi.id })) c.buildRoute({ kind: 'building', id: zi.id });
-      const cap = c.has('feinjustierung') ? content.methods.tropfen.capFine : content.methods.tropfen.cap;
+    if (!scarce && !zi && c.has('rinnenbau')) c.build('zisterne', undefined, tankPos(c, la));
+    if (!scarce && zi && zi.active) {
+      // the cistern is a buffer, not a third feed: only a cheap channel, never a pumped pipe
+      if (!c.hasRoute({ kind: 'building', id: zi.id }) && c.planRoute({ kind: 'building', id: zi.id }, ['rinne'])) c.buildRoute({ kind: 'building', id: zi.id });
       const routeFlow = c.routes(r1).reduce((a, r) => a + r.flow, 0);
       const wantOut = routeFlow < cap * 0.9 ? cap : 0.05;
       if (!zi.out || zi.out.zone !== la || Math.abs(zi.out.rate - wantOut) > 0.01) c.setOut(zi.id, la, wantOut);
     }
     c.researchPlan(['feinjustierung', 'doppeltropf']);
-    if (c.has('doppeltropf') && !c.hasRoute(r2) && !c.mem.noSecondRoute) c.buildRoute(r2);
+    if (!scarce && c.has('doppeltropf') && !c.hasRoute(r2) && !c.mem.noSecondRoute && !c.buildRoute(r2) && !c.planRoute(r2)) c.researchPlan(['rohrguss', 'pumpwerk']); // second drip needs the big source: pumped pipe
+    if (scarce && c.has('doppeltropf')) {
+      // second drip point: a barrel at the other line zone, filled by hand from the hub, dripping at the cap
+      const f2 = c.tankAt(lb);
+      if (!f2) c.build('fass', undefined, tankPos(c, lb));
+      else if (f2.active && (!f2.out || f2.out.zone !== lb || Math.abs(f2.out.rate - cap) > 0.01)) c.setOut(f2.id, lb, cap);
+    }
     if (c.state.routes.length > 0 && c.workersDoing('maintain') < 1) c.hire('wart', { type: 'maintain' });
     c.researchPlan(['schreibstube', 'rohrguss']);
     if (!c.mem.noCarriers) idleCarriersTo(c, r1);
@@ -205,8 +253,25 @@ export const tropfmeister: Strategy = {
   body(c) {
     if (!c.idle()) return;
     if (c.repairWorst(0.4)) return;
-    const [l0, l1] = c.lineZones();
-    c.carryLoop({ kind: 'zone', zone: c.mem.dripZone === 1 ? l1 : l0 });
+    const l0 = shadyLineZone(c), l1 = (l0 + 4) % 8;
+    const la = c.mem.dripZone === 1 ? l1 : l0, lb = c.mem.dripZone === 1 ? l0 : l1;
+    if (c.scarceWater()) {
+      // the channel-fed barrel drips at the cap; everyone shuttles its surplus to the barrels without a channel (second drip point)
+      const cap = c.has('feinjustierung') ? content.methods.tropfen.capFine : content.methods.tropfen.cap;
+      const tanks = c.state.buildings.filter((b) => (b.type === 'fass' || b.type === 'zisterne') && b.active);
+      const fed = tanks.filter((t) => c.hasRoute({ kind: 'building', id: t.id }));
+      const unfed = tanks.filter((t) => t.out && !fed.includes(t) && t.liters < t.cap * 0.8);
+      const src = fed.find((t) => t.liters - cap * 60 > 0);
+      const carry = c.carryCap();
+      if (unfed.length > 0) {
+        if (c.p.carry >= carry * 0.9 || (c.p.carry > 0 && !src)) {
+          let best = unfed[0]; for (const t of unfed) if (dist(t.pos, c.p.pos) < dist(best.pos, c.p.pos)) best = t;
+          c.deliver({ kind: 'building', id: best.id }); return;
+        }
+        if (src && src.liters - cap * 60 >= Math.min(carry, 10)) { c.fillFromTank(src.id); return; }
+      } else if (src && c.hubLoop({ id: src.id, liters: src.liters - cap * 60, active: true }, lb)) return;
+    }
+    c.carryLoop({ kind: 'zone', zone: la });
   },
 };
 
@@ -216,7 +281,7 @@ export const keilschlaeger: Strategy = {
   step(c) {
     keepReserve(c, 5);
     if (opening(c, 150, ['holzsegen', 'zaeher_traeger', 'quellrecht', 'ratsgunst'])) return;
-    const [la, lb] = c.lineZones();
+    const la = shadyLineZone(c), lb = (la + 4) % 8;
     const land = landscapeDef(c.state.landscape);
     const maxW = content.methods.keile.maxWedges;
     const need = [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8];
@@ -228,8 +293,17 @@ export const keilschlaeger: Strategy = {
     if (c.has('bohrer') && !c.hasTool('bohrer')) { if (c.p.tools.filter((t) => t !== 'haende').length >= 2) c.dropTool('eimer'); c.buyTool('bohrer'); }
     const holesFree = need.reduce((a, z) => a + Math.max(0, c.zone(z).holes - c.zone(z).wedges), 0);
     if (c.has('quellkeile') && holesFree > c.wood) c.buyWood(Math.min(6, holesFree - c.wood));
-    coreRoute(c, { kind: 'zone', zone: la });
-    if (c.money > 350 && !c.hasRoute({ kind: 'zone', zone: lb })) c.buildRoute({ kind: 'zone', zone: lb });
+    const scarce = c.scarceWater();
+    const hub = scarce ? c.waterHub(la) : undefined;
+    if (hub) { coreRoute(c, { kind: 'building', id: hub.id }); if (!hub.out || hub.out.zone !== la || Math.abs(hub.out.rate - 0.3) > 0.01) c.setOut(hub.id, la, 0.3); }
+    else if (!scarce) coreRoute(c, { kind: 'zone', zone: la });
+    shadeLine(c, c.money > 400 ? need.filter((z) => c.zone(z).wedges > 0 || z === la || z === lb) : [la, lb]);
+    if (!hub && c.money > 350 && !c.hasRoute({ kind: 'zone', zone: lb })) c.buildRoute({ kind: 'zone', zone: lb });
+    if (!hub && c.money > 600 && c.state.routes.length < 4) {
+      // rich and the water is free: a channel to the wedge zone whose wedges stay driest
+      const dry = need.filter((z) => c.zone(z).wedges > 0 && !c.hasRoute({ kind: 'zone', zone: z })).sort((a, b) => c.zone(a).wedgeWet - c.zone(b).wedgeWet)[0];
+      if (dry !== undefined && !c.buildRoute({ kind: 'zone', zone: dry }) && !c.planRoute({ kind: 'zone', zone: dry })) c.researchPlan(['rohrguss', 'pumpwerk']);
+    }
     c.researchPlan(['bohrtrupp']);
     if (c.has('bohrtrupp') && c.workersDoing('drill') + c.workersDoing('wedges') < 2) {
       const z = need.find((zz) => c.zone(zz).holes < maxW);
@@ -247,7 +321,7 @@ export const keilschlaeger: Strategy = {
   body(c) {
     if (!c.idle()) return;
     if (c.repairWorst(0.45)) return;
-    const [la, lb] = c.lineZones();
+    const la = shadyLineZone(c), lb = (la + 4) % 8;
     const maxW = content.methods.keile.maxWedges;
     const order = [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8, (la + 2) % 8, (lb + 2) % 8];
     if (c.hasTool('bohrer')) {
@@ -257,6 +331,12 @@ export const keilschlaeger: Strategy = {
     }
     let best = la, bw = 2;
     for (const z of order) { const zz = c.zone(z); if (zz.wedges > 0 && zz.wedgeWet < bw) { bw = zz.wedgeWet; best = z; } }
+    // a cart load wets several zones: each wedge zone only takes what its wedges still soak up
+    const lpw = content.methods.keile.litersPerWedge;
+    const wedgeZones = order.filter((z) => c.zone(z).wedges > 0);
+    if (wedgeZones.length > 0 && c.p.carry > 0 && c.pourWhereNeeded(wedgeZones, (z) => (1 - c.zone(z).wedgeWet) * lpw * c.zone(z).wedges + 1)) return;
+    const hub = c.scarceWater() ? c.waterHub(la) : undefined;
+    if (hub && c.hubLoop(hub, best)) return;
     c.carryLoop({ kind: 'zone', zone: best });
   },
 };
@@ -329,7 +409,18 @@ export const ingenieur: Strategy = {
     const land = landscapeDef(c.state.landscape);
     c.mem.keepTargets = true;
     c.ensureCarriers(c.hasRoute({ kind: 'zone', zone: la }) ? 2 : 3, { kind: 'zone', zone: la });
-    if (!coreRoute(c, { kind: 'zone', zone: la })) return;
+    // once the jet stands, its feed comes before everything else (a pipe on the steppe costs more than the research left)
+    const sw0 = c.building('strahlwerk');
+    if (sw0 && !c.hasRoute({ kind: 'building', id: sw0.id })) {
+      const cheap = c.planRoute({ kind: 'building', id: sw0.id }, ['rinne']);
+      if (!c.buildRoute({ kind: 'building', id: sw0.id }) && !cheap) {
+        // the zone channel from a small source (well, spring) blocks the cheap feed of the jet: tear it down, the jet needs it more
+        const r = c.state.routes.find((x) => x.to.kind === 'zone' && (c.state.sources.find((q) => q.id === x.from)?.storeCap ?? 0) < 100000);
+        if (r) c.out.push({ t: 'demolish', p: c.pid, id: r.id });
+      }
+      if (c.blocked) { c.carryTools(c.has('eimerbau') ? 'karren' : undefined); spreadCarriers(c, [{ kind: 'building', id: sw0.id }]); return; }
+    }
+    if (!sw0 && !coreRoute(c, { kind: 'zone', zone: la })) return;
     const energyResearch = land.waterwheel ? 'wasserrad' : 'windrad';
     c.researchPlan(['bohrer', 'sandgrube', energyResearch, 'pumpwerk', 'strahlwerk']);
     const need = content.methods.strahl.energy + (c.state.routes.some((r) => r.pumped) ? 0.5 : 0);
@@ -341,7 +432,6 @@ export const ingenieur: Strategy = {
     if (c.has('sandgrube') && c.state.buildings.filter((b) => b.type === 'sandgrube').length < (land.sandPrice === 0 ? 2 : 1)) c.build('sandgrube');
     if (c.has('strahlwerk') && !c.building('strahlwerk')) c.build('strahlwerk', la);
     const sw = c.building('strahlwerk');
-    if (sw && !c.hasRoute({ kind: 'building', id: sw.id })) c.buildRoute({ kind: 'building', id: sw.id });
     if (c.state.eco.sand < 15 && land.sandPrice > 0 && sw) c.buySand(20);
     if (sw && c.hasRoute({ kind: 'building', id: sw.id }) && c.money > 900 && !c.building('strahlwerk', lb) && c.state.eco.energyProd >= need * 1.9) c.build('strahlwerk', lb);
     const sw2 = c.building('strahlwerk', lb);
@@ -370,16 +460,25 @@ export const gaertner: Strategy = {
   step(c) {
     keepReserve(c, 5);
     if (opening(c, 150, ['quellrecht', 'dichte_rinnen', 'zaeher_traeger', 'holzsegen'])) return;
-    const [la, lb] = c.lineZones();
+    const la = shadyLineZone(c), lb = (la + 4) % 8;
     c.mem.keepTargets = true;
     c.ensureCarriers(3, { kind: 'zone', zone: la });
     const zonesWithTrees = [0, 1, 2, 3, 4, 5, 6, 7].filter((z) => c.zone(z).growths.length > 0);
     spreadCarriers(c, (zonesWithTrees.length > 0 ? zonesWithTrees : [la, lb]).map((z) => ({ kind: 'zone', zone: z }) as WaterTarget));
     c.researchPlan(['setzlinge', 'bohrer']);
     if (c.has('bohrer') && !c.hasTool('bohrer')) { if (c.p.tools.filter((t) => t !== 'haende').length >= 2) c.dropTool('eimer'); c.buyTool('bohrer'); }
-    coreRoute(c, { kind: 'zone', zone: la });
+    const scarce = c.scarceWater();
+    const hub = scarce ? c.waterHub(la) : undefined;
+    if (hub) { coreRoute(c, { kind: 'building', id: hub.id }); if (!hub.out || hub.out.zone !== la || Math.abs(hub.out.rate - 0.3) > 0.01) c.setOut(hub.id, la, 0.3); }
+    else if (!scarce) coreRoute(c, { kind: 'zone', zone: la });
+    shadeLine(c, c.money > 400 ? [0, 1, 2, 3, 4, 5, 6, 7].filter((z) => c.zone(z).growths.length > 0 || z === la || z === lb) : [la, lb]);
     c.researchPlan(['wurzelwerk']);
-    if (c.money > 350 && !c.hasRoute({ kind: 'zone', zone: lb })) c.buildRoute({ kind: 'zone', zone: lb });
+    if (!hub && c.money > 350 && !c.hasRoute({ kind: 'zone', zone: lb })) c.buildRoute({ kind: 'zone', zone: lb });
+    if (!hub && c.money > 600 && c.state.routes.length < 4) {
+      // rich and the water is free: a channel to the tree zone that stays driest (growth follows wetness)
+      const dry = [0, 1, 2, 3, 4, 5, 6, 7].filter((z) => c.zone(z).growths.length > 0 && !c.hasRoute({ kind: 'zone', zone: z })).sort((a, b) => c.zone(a).wet - c.zone(b).wet)[0];
+      if (dry !== undefined && !c.buildRoute({ kind: 'zone', zone: dry }) && !c.planRoute({ kind: 'zone', zone: dry })) c.researchPlan(['rohrguss', 'pumpwerk']); // the river lies below the stone: pumped pipes
+    }
     c.researchPlan(['bewaesserungsring', 'schreibstube']);
     c.carryTools();
     idleCarriersTo(c, { kind: 'zone', zone: la });
@@ -387,7 +486,7 @@ export const gaertner: Strategy = {
   body(c) {
     if (!c.idle()) return;
     if (c.repairWorst(0.45)) return;
-    const [la, lb] = c.lineZones();
+    const la = shadyLineZone(c), lb = (la + 4) % 8;
     const m = content.methods.wurzel;
     const order = [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8, (la + 2) % 8, (lb + 2) % 8];
     if (c.has('setzlinge') && c.money > 20) {
@@ -401,6 +500,10 @@ export const gaertner: Strategy = {
     }
     let best = la, bw = 2;
     for (const z of order) { const zz = c.zone(z); if (zz.growths.length > 0 && zz.wet < bw) { bw = zz.wet; best = z; } }
+    const treeZones = order.filter((z) => c.zone(z).growths.length > 0);
+    if (treeZones.length > 0 && c.p.carry > 0 && c.pourWhereNeeded(treeZones, (z) => (1 - c.zone(z).wet) * 40 + 1)) return;
+    const hub = c.scarceWater() ? c.waterHub(la) : undefined;
+    if (hub && c.hubLoop(hub, best)) return;
     c.carryLoop({ kind: 'zone', zone: best });
   },
 };

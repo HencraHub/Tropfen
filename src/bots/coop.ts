@@ -1,5 +1,6 @@
 import type { Strategy } from './strategies';
-import { tropfmeister } from './strategies';
+import type { BotCtx } from './toolkit';
+import { tropfmeister, shadyLineZone } from './strategies';
 import { dist, content } from '../sim/index';
 
 /**
@@ -24,18 +25,31 @@ export const teamAbgestimmt: Strategy = {
       // B waits with building until A has tapped the stone and set the line (Arbeitsteilung, one opening)
       if (!(c.mem.A as Record<string, unknown>).openingDone) { c.carryTools(); return; }
     }
-    else { me.dripZone = 0; me.noSecondRoute = true; me.maxCarriers = 2; }
+    else { me.dripZone = 0; me.noSecondRoute = false; me.maxCarriers = 2; me.loan = 350; me.keepBuildingTargets = true; } // A runs the full drip economy (both drip points); one opening, the team's full credit line; A leaves B's barrel carriers alone
     me.perkPrefer = ['dichte_rinnen', 'quellrecht', 'ratsgunst', 'zaeher_traeger'];
     c.mem = me;
-    tropfmeister.step(c);
+    if (role === 'A') tropfmeister.step(c); else supportStep(c);
     c.mem = saved;
     if (role !== 'B') return;
     // B: bucket chain from the richest near source with two own hands plus itself; leave it for village trips
     const p = c.p;
     const chain = c.state.chains[0];
     if (p.chain && p.queue.length > 0) { c.out.push({ t: 'leaveChain', p: c.pid }); return; }
-    const lb = c.lineZones()[1];
-    if (!chain && !c.hasRoute({ kind: 'zone', zone: lb })) {
+    const lb = (shadyLineZone(c) + 4) % 8; // B's drip zone, the same the tropfmeister uses for dripZone 1
+    // B's drip tank (scarce landscapes): the chain feeds it so the outlet drips at the cap
+    const hubB = c.scarceWater() ? c.waterHub(lb, 'fass') : undefined;
+    const bTarget = hubB && hubB.active ? { kind: 'building' as const, id: hubB.id } : { kind: 'zone' as const, zone: lb };
+    const scarce = c.scarceWater();
+    if (scarce) {
+      // scarce source: a chain cannot add water, so B runs the second drip point with two carriers of its own
+      const mine = c.state.workers.filter((w) => w.kind === 'traeger' && w.task && w.task.type === 'carry' && (w.task.target as { zone?: number; id?: string }).zone === lb);
+      const mineB = c.state.workers.filter((w) => w.kind === 'traeger' && w.task && w.task.type === 'carry' && hubB && (w.task.target as { id?: string }).id === hubB.id);
+      const src = c.bestSource('near');
+      if (mine.length + mineB.length < 2 && c.state.workers.length < c.state.eco.workerSlots && src && c.afford(60)) c.hire('traeger', { type: 'carry', source: src, target: bTarget });
+      if (bTarget.kind === 'building') for (const w of mine) { const s2 = c.bestSource('near'); if (s2) c.assign(w.id, { type: 'carry', source: s2, target: bTarget }); }
+      return;
+    }
+    if (!chain && !c.hasRouteNear(lb)) {
       let src: string | null = null, best = 0;
       for (const s of c.state.sources) { if (!s.unlocked || s.kind === 'regen' || s.kind === 'tau') continue; const len = dist(s.pos, { x: 0, z: 0 }) - c.state.stone.radius; if (len > 130) continue; if (s.flow > best) { best = s.flow; src = s.id; } }
       if (src) {
@@ -45,7 +59,7 @@ export const teamAbgestimmt: Strategy = {
         const want = Math.min(3, Math.max(2, Math.ceil(len / content.routes.carry.chainSpacing) - 1));
         const chainHands = c.state.workers.filter((w) => w.kind === 'traeger' && (w.task === null || (w.task.type === 'carry' && (w.task as { source: string }).source === src && c.mem.bHired)));
         if (chainHands.length < want) { if (c.state.workers.length < c.state.eco.workerSlots && c.afford(60)) { c.hire('traeger', { type: 'carry', source: src, target: { kind: 'zone', zone: lb } }); (c.mem as Record<string, unknown>).bHired = true; } }
-        else c.out.push({ t: 'chain', p: c.pid, source: src, target: { kind: 'zone', zone: lb }, workers: chainHands.slice(0, want).map((w) => w.id) });
+        else c.out.push({ t: 'chain', p: c.pid, source: src, target: bTarget, workers: chainHands.slice(0, want).map((w) => w.id) });
         void mine;
       }
     }
@@ -56,7 +70,7 @@ export const teamAbgestimmt: Strategy = {
       const la = c.lineZones()[0];
       const srcFlow = c.state.sources.find((x) => x.id === chain.source)?.flow ?? 0;
       // a scarce source cannot feed both the channel and the chain: once A's channel runs, the hands carry instead
-      if (c.hasRoute({ kind: 'zone', zone: lb }) || (starved > 40 && c.state.tick > 3000) || (c.hasRoute({ kind: 'zone', zone: la }) && srcFlow < 2.5)) {
+      if (c.hasRouteNear(lb) || (starved > 40 && c.state.tick > 3000) || (c.hasRouteNear(la) && srcFlow < 2.5)) {
         c.out.push({ t: 'unchain', p: c.pid, chain: chain.id });
         const src = c.bestSource('near');
         if (src) for (const w of chain.workers) c.out.push({ t: 'assign', p: c.pid, worker: w, task: { type: 'carry', source: src, target: { kind: 'zone', zone: lb } } });
@@ -75,6 +89,7 @@ export const teamAbgestimmt: Strategy = {
     if (role === 'B') {
       const chain = c.state.chains[0];
       if (chain && !c.p.chain && c.idle()) { c.out.push({ t: 'joinChain', p: c.pid, chain: chain.id }); c.mem = saved; return; }
+      if (!c.p.chain && supportBody(c)) { c.mem = saved; return; }
     }
     // synchronised gush: both carry water and the sunny line zone is hot
     const st = c.state;
@@ -106,4 +121,53 @@ export function makeCoordinatedPair(): { pid: string; strategy: Strategy; mem: R
     { pid: 'p1', strategy: teamAbgestimmt, mem },
     { pid: 'p2', strategy: teamAbgestimmt, mem },
   ];
+}
+
+/** Zones B works: the line and its neighbours (wedges count 50 % off the line, still worth it). */
+function supportZones(c: BotCtx): number[] {
+  const [la, lb] = c.lineZones();
+  return [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8];
+}
+
+/** B's plan: Arbeitsteilung – while A runs the drip economy, B drills, wedges and waters the same line (keile + tropfen on one line). */
+function supportStep(c: BotCtx): void {
+  c.researchPlan(['bohrer', 'quellkeile']);
+  if (c.has('bohrer') && !c.hasTool('bohrer')) { if (c.p.tools.filter((t) => t !== 'haende').length >= 2) c.dropTool('eimer'); c.buyTool('bohrer'); }
+  if (!c.p.tools.some((t) => t === 'eimer' || t === 'tragjoch' || t === 'karren')) c.carryTools(c.has('eimerbau') ? 'karren' : undefined);
+  const need = supportZones(c);
+  const holesFree = need.reduce((a, z) => a + Math.max(0, c.zone(z).holes - c.zone(z).wedges), 0);
+  if (c.has('quellkeile') && holesFree > c.wood) c.buyWood(Math.min(6, holesFree - c.wood));
+  if (c.money > 500) c.researchPlan(['bohrtrupp']);
+  if (c.has('bohrtrupp') && c.workersDoing('drill') + c.workersDoing('wedges') < 1 && c.state.workers.length < c.state.eco.workerSlots) {
+    const z = need.find((zz) => c.zone(zz).holes < content.methods.keile.maxWedges);
+    if (z !== undefined) c.hire('bohrtrupp', { type: 'drill', zone: z, deep: false });
+  }
+  for (const w of c.idleWorkers()) if (w.kind === 'bohrtrupp') {
+    const z = need.find((zz) => c.zone(zz).holes < content.methods.keile.maxWedges);
+    if (z !== undefined) c.assign(w.id, { type: 'drill', zone: z, deep: false });
+    else { const wz = need.find((zz) => c.zone(zz).wedges < c.zone(zz).holes); if (wz !== undefined) c.assign(w.id, { type: 'wedges', zone: wz }); }
+  }
+}
+
+/** B's hands: drill, wedge, water the wedges (from A's cistern if it has spare, else from the source). Returns false when nothing to do. */
+function supportBody(c: BotCtx): boolean {
+  if (!c.idle()) return true;
+  const need = supportZones(c);
+  const maxW = content.methods.keile.maxWedges;
+  if (c.hasTool('bohrer')) {
+    if (c.has('quellkeile') && c.wood >= 1) { const wz = need.find((z) => c.zone(z).wedges < c.zone(z).holes); if (wz !== undefined) { c.wedge(wz); return true; } }
+    const dz = need.find((z) => c.zone(z).holes < maxW && (z % 4 === c.state.stone.line || c.progress > 0.08));
+    if (dz !== undefined) { c.drill(dz); return true; }
+  }
+  const wedgeZones = need.filter((z) => c.zone(z).wedges > 0);
+  if (wedgeZones.length === 0) return false;
+  const lpw = content.methods.keile.litersPerWedge;
+  if (c.p.carry > 0 && c.pourWhereNeeded(wedgeZones, (z) => (1 - c.zone(z).wedgeWet) * lpw * c.zone(z).wedges + 1)) return true;
+  const driest = wedgeZones.reduce((a, z) => (c.zone(z).wedgeWet < c.zone(a).wedgeWet ? z : a), wedgeZones[0]);
+  if (c.zone(driest).wedgeWet > 0.7) return false; // wedges are wet: help elsewhere (chain, gush, drip)
+  const zi = c.state.buildings.find((b) => (b.type === 'zisterne' || b.type === 'fass') && b.active && b.liters >= Math.min(c.carryCap(), 10));
+  if (zi) { c.fillFromTank(zi.id); return true; }
+  const src = c.bestSource('near');
+  if (src) { c.scoop(src); return true; }
+  return false;
 }

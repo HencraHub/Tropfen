@@ -544,7 +544,7 @@ function updateStone(state: GameState, rng: Rng): void {
   const land = landscapeDef(state.landscape);
   const sunB = sunBase(state);
   const sunW = sunRaw(state.tick) * weatherNow(state).sun;
-  const frostMood = moodValue(state, 'frost', 1);
+  const frostMood = moodValue(state, 'frost', 1) * (hasResearch(state, 'nachtwache') ? m.frost.nachtwacheBonus : 1);
   const dripCap = hasResearch(state, 'feinjustierung') ? m.tropfen.capFine : m.tropfen.cap;
   const dripZones = hasResearch(state, 'doppeltropf') ? 2 : 1;
   // buildings per zone
@@ -624,7 +624,8 @@ function updateStone(state: GameState, rng: Rng): void {
       const mult = 1 + m.tropfen.streakMult * Math.min(1, z.streak / (m.tropfen.streakFull * 10));
       const rate = Math.min(z.drip, dripCap);
       const salt = land.salt && (st.rock === 'kalkstein' || st.rock === 'sandstein') ? 1.1 : 1;
-      add('tropfen', i, m.tropfen.k * rock.sus.tropfen * rate * mult * (m.tropfen.wetBase + z.wet) * salt * DT);
+      const second = dripRank[0] !== i ? m.tropfen.secondDrip : 1; // Doppeltropf: the second drip point works at reduced strength
+      add('tropfen', i, m.tropfen.k * rock.sus.tropfen * rate * mult * (m.tropfen.wetBase + z.wet) * salt * second * DT);
     } else z.streak = 0;
     z.drip = 0;
     // wedges

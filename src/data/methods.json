@@ -1,6 +1,6 @@
 {
   "thermoschock": {
-    "k": 0.8,
+    "k": 0.9,
     "deltaMin": 30,
     "exp": 1.15,
     "knee": 150,
@@ -18,26 +18,28 @@
     "capPerProgress": 300,
     "keep": 0.3,
     "freezeBelow": 0,
-    "drainPerHour": 0.5
+    "drainPerHour": 0.5,
+    "nachtwacheBonus": 1.3
   },
   "tropfen": {
-    "k": 20,
+    "k": 18,
     "cap": 0.4,
     "capFine": 0.7,
     "minRate": 0.05,
     "streakFull": 600,
     "streakMult": 2,
-    "wetBase": 0.5
+    "wetBase": 0.5,
+    "secondDrip": 0.6
   },
   "keile": {
-    "k": 2.1,
+    "k": 2.3,
     "maxWedges": 6,
     "lineBonus": 1.5,
     "litersPerWedge": 8,
     "wetDecay": 0.35
   },
   "dampf": {
-    "k": 9.5,
+    "k": 9,
     "minT": 85,
     "minLiters": 10,
     "maxLiters": 60,
@@ -60,7 +62,7 @@
     "sand": 0.1
   },
   "wurzel": {
-    "k": 5.8,
+    "k": 6.2,
     "growPerHour": 0.04,
     "minProgress": 0.03,
     "shadePerGrowth": 0.2,

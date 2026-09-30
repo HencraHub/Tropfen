@@ -157,6 +157,13 @@ export class BotCtx {
   // -------------------------------------------------- routes
   routes(to: RouteTarget) { return this.state.routes.filter((r) => sameTarget(r.to, to)); }
   hasRoute(to: RouteTarget): boolean { return this.routes(to).some((r) => r.ok); }
+  /** A working route into the zone itself or into a tank standing at that zone (water hub). */
+  hasRouteNear(zone: number): boolean {
+    if (this.hasRoute({ kind: 'zone', zone })) return true;
+    const a = (zone / 8) * Math.PI * 2, r = this.state.stone.radius + 5;
+    const pos = { x: Math.sin(a) * r, z: Math.cos(a) * r };
+    return this.state.routes.some((rt) => rt.ok && rt.to.kind === 'building' && dist(this.state.buildings.find((b) => b.id === (rt.to as { id: string }).id)?.pos ?? { x: 999, z: 999 }, pos) < 10);
+  }
   /** Plan the cheapest working route to `to`. Returns null if none possible with current research. */
   planRoute(to: RouteTarget, kinds: ('rinne' | 'rohr')[] = ['rinne', 'rohr']): { kind: 'rinne' | 'rohr'; from: string; points: Vec2[]; pumped: boolean; cost: number; wood: number; length: number } | null {
     let best: ReturnType<BotCtx['planRoute']> = null;
@@ -264,6 +271,51 @@ export class BotCtx {
     else if (t.kind === 'village') this.out.push({ t: 'sell', p: this.pid });
     else this.out.push({ t: 'pourTank', p: this.pid, building: t.id });
   }
+  /** Landscapes whose only real sources are small stores (steppe well, mountain spring): one channel drains them. */
+  scarceWater(): boolean {
+    let flow = 0;
+    for (const s of this.state.sources) {
+      if (!s.unlocked || s.kind === 'regen' || s.kind === 'tau') continue;
+      if (s.storeCap >= 100000) return false;
+      flow += s.flow;
+    }
+    return flow <= 2;
+  }
+  /** Water hub for scarce landscapes: the channel fills a cistern at the stone, the player hands the water out from there. */
+  waterHub(nearZone: number, kind: 'fass' | 'zisterne' = 'zisterne') {
+    const a = (nearZone / 8) * Math.PI * 2, r = this.state.stone.radius + 5;
+    const pos = { x: Math.sin(a) * r, z: Math.cos(a) * r };
+    const near = (b: { type: string; pos: Vec2 }) => (b.type === 'zisterne' || b.type === 'fass') && dist(b.pos, pos) < 10;
+    const hub = this.state.buildings.find((b) => b.type === 'zisterne' && near(b)) ?? this.state.buildings.find((b) => b.type === 'fass' && near(b));
+    if (hub) return hub;
+    if (kind === 'fass') this.build('fass', undefined, pos); // a barrel: cheap, no research, 200 L – enough when an outlet drains it steadily
+    else { this.researchPlan(['rinnenbau']); if (this.has('rinnenbau')) this.build('zisterne', undefined, pos); } // 1000 L buffer while the player is busy elsewhere
+    return undefined;
+  }
+  /** The tank standing at a zone (hub), if any – no building. */
+  tankAt(zone: number) {
+    const a = (zone / 8) * Math.PI * 2, r = this.state.stone.radius + 5;
+    const pos = { x: Math.sin(a) * r, z: Math.cos(a) * r };
+    return this.state.buildings.find((b) => (b.type === 'zisterne' || b.type === 'fass') && dist(b.pos, pos) < 10);
+  }
+  /** Body helper: take water from the hub and pour it on `zone`. Returns false when the hub has nothing to give. */
+  hubLoop(hub: { id: string; liters: number; active: boolean }, zone: number): boolean {
+    if (!hub.active) return false;
+    const cap = this.carryCap();
+    if (this.p.carry >= cap * 0.9 || (this.p.carry > 0 && hub.liters < 1)) { this.deliver({ kind: 'zone', zone }); return true; }
+    if (hub.liters >= Math.min(cap, 10)) { this.fillFromTank(hub.id); return true; }
+    return false;
+  }
+  pourSome(zone: number, liters: number): void { this.out.push({ t: 'pour', p: this.pid, zone, liters }); }
+  /** Pour only what a zone can use, so one cart load wets several zones. `need(z)` = liters the zone still takes. */
+  pourWhereNeeded(zones: number[], need: (z: number) => number): boolean {
+    if (this.p.carry <= 0) return false;
+    let best = -1, bn = 0;
+    for (const z of zones) { const n = need(z); if (n > bn) { bn = n; best = z; } }
+    if (best < 0 || bn < 2) { this.pourSome(zones[0] ?? 0, this.p.carry); return true; }
+    this.pourSome(best, Math.min(this.p.carry, bn));
+    return true;
+  }
   /** Default body loop: scoop and deliver. */
   carryLoop(target: WaterTarget, pref: 'near' | 'cold' = 'near'): void {
     if (!this.idle()) return;
@@ -330,10 +382,11 @@ export class BotCtx {
     // retarget carriers that deliver elsewhere
     for (const w of carriers) {
       const t = (w.task as { target: WaterTarget }).target;
-      if (!sameWaterTarget(t, target) && !(this.mem.keepTargets as boolean)) { this.assign(w.id, { type: 'carry', source: src, target }); return; }
+      if (!sameWaterTarget(t, target) && !(this.mem.keepTargets as boolean) && !((this.mem.keepBuildingTargets as boolean) && t.kind === 'building')) { this.assign(w.id, { type: 'carry', source: src, target }); return; }
     }
   }
-  idleWorkers() { return this.state.workers.filter((w) => !w.task); }
+  /** Workers without a task, plus drill/wedge crews whose zone is finished (they stand idle until reassigned). */
+  idleWorkers() { return this.state.workers.filter((w) => !w.task || ((w.task.type === 'drill' || w.task.type === 'wedges') && w.phase === 'idle')); }
   mainMethod(): MethodId | null {
     let best: MethodId | null = null; let bv = 0;
     for (const k of Object.keys(this.state.stone.dmg) as MethodId[]) if (this.state.stone.dmg[k] > bv) { bv = this.state.stone.dmg[k]; best = k; }

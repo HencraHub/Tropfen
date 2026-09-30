@@ -10,6 +10,7 @@
 - `npm run test:e2e` – Playwright (`e2e/`), startet Server und Vite-Vorschau selbst
 - `npm run screenshots` – Screenshots nach `docs/screenshots/`
 - `npm run build` · `npm run electron:build`
+- Balance-Werkzeuge: `npx tsx scripts/trybot.ts <land> <rock> <bot|all> <seed>` (eine Partie mit Route-/Online-Zeit), `npx tsx scripts/why.ts <land> <rock> <bot> <seed> <min> <ticks>` (Zonen/Tanks/Arbeiter je Intervall), `python3 scripts/baltable.py [bericht]` (Kurztabelle), `SEEDS=3 WORKERS=3 LANDS=... ROCKS=... BOTS=... BALANCE_OUT=... npm run balance` (Teilläufe).
 
 ## Architektur
 - `src/sim/` Simulationskern. Kein DOM, kein Zufall außer `Rng` aus dem Seed, kein `Date`. Fester Takt `TICK_MS=100`. Alles, was Spiel, Server und Bots teilen, liegt hier. Eingaben nur über `Command`-Objekte (`src/sim/commands.ts`).

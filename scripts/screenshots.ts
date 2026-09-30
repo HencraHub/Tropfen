@@ -13,10 +13,11 @@ const base = 'http://localhost:5173';
 async function lookAtStone(page: Page): Promise<void> {
   await page.evaluate(() => {
     const a = (window as any).__app; const s = a.session.state; const me = s.players.find((p: any) => p.id === a.session.playerId);
-    const yaw = Math.atan2(-(-me.pos.x), -(-me.pos.z)); // face the origin
-    a.play.yaw = Math.atan2(me.pos.x, me.pos.z); a.play.pitch = -0.08;
+    // step back to 16 m from the stone (local state) and face the origin
+    const d = Math.hypot(me.pos.x, me.pos.z) || 1;
+    me.pos.x = (me.pos.x / d) * 16; me.pos.z = (me.pos.z / d) * 16; me.moveTarget = null; me.queue = []; me.action = null;
+    a.play.yaw = Math.atan2(me.pos.x, me.pos.z); a.play.pitch = -0.1;
     a.session.speed = 0;
-    void yaw;
   });
   await page.waitForTimeout(700);
 }

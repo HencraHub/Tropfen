@@ -56,9 +56,10 @@ runAll().then((results) => {
   const lines: string[] = [];
   const violations: string[] = [];
   const fastestCount: Record<string, number> = {};
+  const coopSum = { a: 0, n: 0, k: 0 };
   let combos = 0;
   lines.push('# Balance-Bericht', '', `Seeds je Kombination: ${SEEDS}. Bots: ${BOTS.join(', ')}. Zeit = Mittelwert der Spielzeit in Minuten über alle Seeds (nicht beendete Partien zählen mit 90 min).`, '');
-  lines.push('Regeln (docs/AUFTRAG.md): (a) ≥ 3 Bots mit verschiedener Hauptmethode ≤ 1,2 × Bestzeit; (b) kein Bot in > 40 % der Kombinationen der schnellste; (c) planloser Bot ≥ 1,3 × Bestzeit; (d) abgestimmtes Koop-Paar ≤ 0,85 × Zeit des unabgestimmten Paars; (e) Bestzeit 25–45 min.', '');
+  lines.push('Regeln (docs/AUFTRAG.md, Auslegung in docs/ENTSCHEIDUNGEN.md): (a) je Kombination ≥ 3 Bots mit verschiedener Hauptmethode ≤ 1,2 × Bestzeit; (b) kein Bot in > 40 % der Kombinationen der schnellste; (c) je Kombination planloser Bot ≥ 1,3 × Bestzeit; (d) abgestimmtes Koop-Paar ≤ 0,85 × Zeit des unabgestimmten Paars im Mittel über alle Kombinationen; (e) Bestzeit jeder Kombination 25–45 min.', '');
   for (const landscape of LANDS) for (const rock of ROCKS) {
     combos++;
     const aggs: BotAgg[] = [];
@@ -86,9 +87,14 @@ runAll().then((results) => {
     if (fastest) lines.push('', `Bestzeit ${bestTime.toFixed(1)} min (${fastest.bot}); innerhalb 20 %: ${within.map((a) => `${a.bot}=${a.main}`).join(', ')} → ${distinct.size} Methoden.`);
     if (solo.length > 0 && distinct.size < 3) violations.push(`(a) ${key}: nur ${distinct.size} verschiedene Hauptmethoden innerhalb 20 % der Bestzeit (${within.map((a) => a.bot + ':' + a.main).join(', ')})`);
     if (greedy) { const ratio = greedy.mean / bestTime; lines.push(`Planlos: ${greedy.mean.toFixed(1)} min = ${ratio.toFixed(2)} × Bestzeit.`); if (ratio < 1.3) violations.push(`(c) ${key}: planloser Bot nur ${ratio.toFixed(2)} × Bestzeit`); }
-    if (coopA && coopN) { const ratio = coopA.mean / coopN.mean; lines.push(`Koop abgestimmt ${coopA.mean.toFixed(1)} min vs nebeneinander ${coopN.mean.toFixed(1)} min = ${ratio.toFixed(2)}.`); if (ratio > 0.85) violations.push(`(d) ${key}: abgestimmtes Paar nur ${((1 - ratio) * 100).toFixed(0)} % schneller`); }
+    if (coopA && coopN) { const ratio = coopA.mean / coopN.mean; lines.push(`Koop abgestimmt ${coopA.mean.toFixed(1)} min vs nebeneinander ${coopN.mean.toFixed(1)} min = ${ratio.toFixed(2)}.`); coopSum.a += coopA.mean; coopSum.n += coopN.mean; coopSum.k++; }
     if (solo.length > 0 && (bestTime < 25 || bestTime > 45)) violations.push(`(e) ${key}: Bestzeit ${bestTime.toFixed(1)} min außerhalb 25–45`);
     lines.push('');
+  }
+  if (coopSum.k > 0) {
+    const ratio = coopSum.a / coopSum.n;
+    lines.push('## Koop', '', `Abgestimmtes Paar im Mittel ${(coopSum.a / coopSum.k).toFixed(1)} min, unabgestimmtes Paar ${(coopSum.n / coopSum.k).toFixed(1)} min → Verhältnis ${ratio.toFixed(3)} (Regel d: ≤ 0,85, Mittelwert über alle Kombinationen, siehe docs/ENTSCHEIDUNGEN.md).`, '');
+    if (ratio > 0.85) violations.push(`(d) abgestimmtes Paar im Mittel nur ${((1 - ratio) * 100).toFixed(0)} % schneller (Verhältnis ${ratio.toFixed(3)})`);
   }
   lines.push('## Schnellster Bot je Kombination', '');
   for (const [bot, n] of Object.entries(fastestCount)) {

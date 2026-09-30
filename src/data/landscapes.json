@@ -277,9 +277,9 @@
  {
   "id": "steppe",
   "climate": {
-   "day": 42,
+   "day": 38,
    "night": 2,
-   "sun": 1.15,
+   "sun": 1.05,
    "wind": 0.8,
    "humidity": 0.1
   },
