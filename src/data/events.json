@@ -1,0 +1,10 @@
+[
+  { "id": "inspektion", "weight": 10, "durationTicks": 1800, "minDay": 1, "effect": { "inspection": true } },
+  { "id": "duerre", "weight": 10, "durationTicks": 3600, "effect": { "sourceFlow": 0.5 } },
+  { "id": "volksfest", "weight": 8, "durationTicks": 2400, "effect": { "spectacle": 2.0 } },
+  { "id": "holzknappheit", "weight": 8, "durationTicks": 3600, "effect": { "woodPrice": 2.0 } },
+  { "id": "streik", "weight": 6, "durationTicks": 900, "minDay": 2, "effect": { "strike": true } },
+  { "id": "wanderzirkus", "weight": 6, "durationTicks": 1800, "effect": { "spectacleAdd": 25 } },
+  { "id": "launenwechsel", "weight": 5, "durationTicks": 1, "minDay": 2, "effect": { "moodSwap": true } },
+  { "id": "tourbus", "weight": 8, "durationTicks": 1200, "effect": { "spectacleAdd": 15, "waterDemand": 1.5 } }
+]

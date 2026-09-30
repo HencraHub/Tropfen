@@ -1,0 +1,14 @@
+[
+  { "id": "zaeher_traeger", "spill": 0 },
+  { "id": "gute_presse", "spectacle": 1.5 },
+  { "id": "steinfluesterer", "revealWeak": true },
+  { "id": "ratsgunst", "council": 1.3 },
+  { "id": "quellrecht", "sourceFlow": 1.5 },
+  { "id": "frostnacht", "nightTemp": -4 },
+  { "id": "sonnenbrand", "dayTemp": 4 },
+  { "id": "holzsegen", "woodPrice": 0.5 },
+  { "id": "eilbote", "walkSpeed": 1.2 },
+  { "id": "doppelschicht", "workerSpeed": 1.25 },
+  { "id": "dichte_rinnen", "routeLoss": 0.3 },
+  { "id": "sparflamme", "energyUse": 0.7 }
+]

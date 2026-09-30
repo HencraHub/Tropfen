@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-electron/
+release/
+e2e/.results/
+test-results/
+playwright-report/
+.balance-cache/
+*.log

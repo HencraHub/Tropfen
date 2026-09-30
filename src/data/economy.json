@@ -1,0 +1,58 @@
+{
+  "startMoney": 150,
+  "startWood": 0,
+  "baseWorkerSlots": 5,
+  "payPerLiter": 2.0,
+  "payPerPercent": 25,
+  "milestones": [
+    [
+      0.25,
+      120
+    ],
+    [
+      0.5,
+      180
+    ],
+    [
+      0.75,
+      260
+    ]
+  ],
+  "waterSale": {
+    "dailyLiters": 800,
+    "price": 0.35,
+    "overflowPrice": 0.1,
+    "marktLiters": 1200,
+    "marktPrice": 0.45
+  },
+  "spectacle": {
+    "decayPerMinute": 0.1,
+    "incomePerMinute": 0.3
+  },
+  "loan": {
+    "max": 300,
+    "maxBuergschaft": 800,
+    "interestPerDay": 0.1,
+    "interestBuergschaft": 0.05,
+    "repayShare": 0.3
+  },
+  "lineChangeCost": 60,
+  "seedlingCost": 12,
+  "plugCostWood": 1,
+  "stoneHp": 100000,
+  "raceScale": 0.45,
+  "walkSpeed": 4.0,
+  "carryFactor": 0.85,
+  "slopeFactor": 0.35,
+  "interactDistance": 3.5,
+  "actionTicks": {
+    "pour": 10,
+    "wedge": 30,
+    "plant": 40,
+    "charge": 60,
+    "sell": 20,
+    "repair": 80,
+    "release": 5,
+    "line": 20
+  }
+}

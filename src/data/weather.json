@@ -1,0 +1,9 @@
+{
+  "sonnig":      { "sun": 1.0,  "temp": 0,   "rain": 0,   "wind": 1.0, "cloud": 0.1 },
+  "wolkig":      { "sun": 0.5,  "temp": -3,  "rain": 0,   "wind": 1.0, "cloud": 0.7 },
+  "regen":       { "sun": 0.2,  "temp": -6,  "rain": 1.0, "wind": 1.1, "cloud": 0.95 },
+  "sturm":       { "sun": 0.3,  "temp": -4,  "rain": 0.5, "wind": 2.2, "cloud": 0.9 },
+  "hitzewelle":  { "sun": 1.15, "temp": 8,   "rain": 0,   "wind": 0.6, "cloud": 0.0 },
+  "kaeltebruch": { "sun": 0.8,  "temp": -10, "rain": 0,   "wind": 1.3, "cloud": 0.4 },
+  "nebel":       { "sun": 0.35, "temp": -2,  "rain": 0,   "wind": 0.4, "cloud": 0.8, "dew": 1.0 }
+}

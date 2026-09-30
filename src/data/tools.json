@@ -1,0 +1,10 @@
+[
+  { "id": "haende", "cost": 0, "carry": 2, "scoopTicks": 15, "spill": 0.10 },
+  { "id": "eimer", "cost": 20, "carry": 10, "scoopTicks": 30, "spill": 0.05 },
+  { "id": "tragjoch", "cost": 60, "carry": 20, "scoopTicks": 50, "spill": 0.05, "requires": "eimerbau" },
+  { "id": "klopfhammer", "cost": 10, "tapTicks": 50 },
+  { "id": "axt", "cost": 25, "chopTicks": 60 },
+  { "id": "bohrer", "cost": 70, "drillTicks": 120, "requires": "bohrer" },
+  { "id": "tiefbohrer", "cost": 160, "drillTicks": 120, "deepTicks": 360, "requires": "tiefbohrer" },
+  { "id": "karren", "cost": 120, "carry": 60, "scoopTicks": 120, "spill": 0.02, "speed": 0.62, "requires": "eimerbau" }
+]

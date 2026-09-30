@@ -1,0 +1,368 @@
+[
+ {
+  "id": "flusstal",
+  "climate": {
+   "day": 26,
+   "night": 12,
+   "sun": 1.0,
+   "wind": 0.5,
+   "humidity": 0.5
+  },
+  "terrain": {
+   "slope": [
+    0.02,
+    -0.01
+   ],
+   "hills": [
+    [
+     -40,
+     30,
+     25,
+     6
+    ],
+    [
+     50,
+     -40,
+     30,
+     5
+    ],
+    [
+     0,
+     90,
+     40,
+     8
+    ]
+   ]
+  },
+  "sources": [
+   {
+    "id": "fluss",
+    "kind": "fluss",
+    "pos": [
+     0,
+     60
+    ],
+    "elev": -3,
+    "flow": 5,
+    "temp": 14,
+    "reliability": 0.95
+   },
+   {
+    "id": "anzapfung",
+    "kind": "fluss",
+    "pos": [
+     -45,
+     40
+    ],
+    "elev": 4,
+    "flow": 3,
+    "temp": 14,
+    "reliability": 0.95,
+    "requires": "flussanzapfung"
+   },
+   {
+    "id": "regen",
+    "kind": "regen",
+    "pos": [
+     0,
+     0
+    ],
+    "elev": 0,
+    "flow": 1.2,
+    "temp": 12,
+    "reliability": 0.4
+   }
+  ],
+  "village": [
+   40,
+   -35
+  ],
+  "forest": [
+   -45,
+   -30
+  ],
+  "woodPrice": 5,
+  "sandPrice": 4,
+  "councilFactor": 1.0,
+  "salt": false,
+  "waterwheel": true,
+  "weather": {
+   "sonnig": 40,
+   "wolkig": 25,
+   "regen": 20,
+   "sturm": 6,
+   "hitzewelle": 4,
+   "kaeltebruch": 2,
+   "nebel": 3
+  }
+ },
+ {
+  "id": "hochland",
+  "climate": {
+   "day": 20,
+   "night": -6,
+   "sun": 1.2,
+   "wind": 0.9,
+   "humidity": 0.3
+  },
+  "terrain": {
+   "slope": [
+    0.0,
+    0.12
+   ],
+   "hills": [
+    [
+     0,
+     120,
+     60,
+     10
+    ],
+    [
+     -70,
+     20,
+     30,
+     8
+    ],
+    [
+     60,
+     40,
+     25,
+     5
+    ]
+   ]
+  },
+  "sources": [
+   {
+    "id": "bergquelle",
+    "kind": "quelle",
+    "pos": [
+     0,
+     120
+    ],
+    "elev": 15,
+    "flow": 1.5,
+    "temp": 6,
+    "reliability": 0.9,
+    "meltBoost": 1.0,
+    "store": 600
+   },
+   {
+    "id": "regen",
+    "kind": "regen",
+    "pos": [
+     0,
+     0
+    ],
+    "elev": 0,
+    "flow": 0.9,
+    "temp": 8,
+    "reliability": 0.3
+   }
+  ],
+  "village": [
+   55,
+   -30
+  ],
+  "forest": [
+   -70,
+   -50
+  ],
+  "woodPrice": 9,
+  "sandPrice": 6,
+  "councilFactor": 1.0,
+  "salt": false,
+  "waterwheel": false,
+  "weather": {
+   "sonnig": 35,
+   "wolkig": 25,
+   "regen": 12,
+   "sturm": 8,
+   "hitzewelle": 3,
+   "kaeltebruch": 12,
+   "nebel": 5
+  }
+ },
+ {
+  "id": "kueste",
+  "climate": {
+   "day": 28,
+   "night": 16,
+   "sun": 0.9,
+   "wind": 1.4,
+   "humidity": 0.8
+  },
+  "terrain": {
+   "slope": [
+    0.0,
+    -0.06
+   ],
+   "hills": [
+    [
+     -60,
+     -40,
+     35,
+     7
+    ],
+    [
+     70,
+     -30,
+     30,
+     5
+    ]
+   ]
+  },
+  "sources": [
+   {
+    "id": "meer",
+    "kind": "meer",
+    "pos": [
+     0,
+     50
+    ],
+    "elev": -5,
+    "flow": 50,
+    "temp": 18,
+    "reliability": 1.0,
+    "salt": true
+   },
+   {
+    "id": "regen",
+    "kind": "regen",
+    "pos": [
+     0,
+     0
+    ],
+    "elev": 0,
+    "flow": 1.5,
+    "temp": 15,
+    "reliability": 0.5
+   },
+   {
+    "id": "brunnen",
+    "kind": "brunnen",
+    "pos": [
+     45,
+     -25
+    ],
+    "elev": 1,
+    "flow": 0.5,
+    "temp": 16,
+    "reliability": 1.0,
+    "store": 250
+   }
+  ],
+  "village": [
+   45,
+   -35
+  ],
+  "forest": [
+   -55,
+   -45
+  ],
+  "woodPrice": 7,
+  "sandPrice": 0,
+  "councilFactor": 1.0,
+  "salt": true,
+  "waterwheel": false,
+  "weather": {
+   "sonnig": 30,
+   "wolkig": 25,
+   "regen": 22,
+   "sturm": 12,
+   "hitzewelle": 4,
+   "kaeltebruch": 1,
+   "nebel": 6
+  }
+ },
+ {
+  "id": "steppe",
+  "climate": {
+   "day": 42,
+   "night": 2,
+   "sun": 1.15,
+   "wind": 0.8,
+   "humidity": 0.1
+  },
+  "terrain": {
+   "slope": [
+    0.01,
+    0.0
+   ],
+   "hills": [
+    [
+     -80,
+     60,
+     40,
+     9
+    ],
+    [
+     70,
+     70,
+     35,
+     6
+    ]
+   ]
+  },
+  "sources": [
+   {
+    "id": "brunnen",
+    "kind": "brunnen",
+    "pos": [
+     0,
+     80
+    ],
+    "elev": 0,
+    "flow": 0.9,
+    "temp": 22,
+    "reliability": 1.0,
+    "store": 400
+   },
+   {
+    "id": "tau",
+    "kind": "tau",
+    "pos": [
+     0,
+     0
+    ],
+    "elev": 0,
+    "flow": 0.5,
+    "temp": 8,
+    "reliability": 0.7
+   },
+   {
+    "id": "regen",
+    "kind": "regen",
+    "pos": [
+     0,
+     0
+    ],
+    "elev": 0,
+    "flow": 1.0,
+    "temp": 18,
+    "reliability": 0.1
+   }
+  ],
+  "village": [
+   -50,
+   -40
+  ],
+  "forest": [
+   90,
+   -60
+  ],
+  "woodPrice": 14,
+  "sandPrice": 0,
+  "councilFactor": 1.25,
+  "salt": false,
+  "waterwheel": false,
+  "weather": {
+   "sonnig": 55,
+   "wolkig": 15,
+   "regen": 5,
+   "sturm": 6,
+   "hitzewelle": 12,
+   "kaeltebruch": 4,
+   "nebel": 3
+  }
+ }
+]

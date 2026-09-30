@@ -1,0 +1,70 @@
+[
+  {
+    "id": "granit",
+    "hp": 1.3,
+    "hardness": 1.4,
+    "conductivity": 0.8,
+    "thermalMass": 300,
+    "color": "#9a8f86",
+    "sus": {
+      "thermoschock": 1.3,
+      "frost": 1.2,
+      "tropfen": 0.6,
+      "keile": 0.9,
+      "dampf": 1.0,
+      "strahl": 0.8,
+      "wurzel": 0.6
+    }
+  },
+  {
+    "id": "kalkstein",
+    "hp": 0.95,
+    "hardness": 0.9,
+    "conductivity": 1.0,
+    "thermalMass": 250,
+    "color": "#d8cdb0",
+    "sus": {
+      "thermoschock": 0.7,
+      "frost": 1.0,
+      "tropfen": 1.5,
+      "keile": 1.0,
+      "dampf": 0.8,
+      "strahl": 1.2,
+      "wurzel": 1.3
+    }
+  },
+  {
+    "id": "sandstein",
+    "hp": 0.85,
+    "hardness": 0.7,
+    "conductivity": 1.0,
+    "thermalMass": 250,
+    "color": "#d1a06a",
+    "sus": {
+      "thermoschock": 0.6,
+      "frost": 1.3,
+      "tropfen": 1.1,
+      "keile": 1.4,
+      "dampf": 0.7,
+      "strahl": 1.4,
+      "wurzel": 1.2
+    }
+  },
+  {
+    "id": "basalt",
+    "hp": 1.2,
+    "hardness": 1.2,
+    "conductivity": 1.1,
+    "thermalMass": 220,
+    "color": "#5d5a5f",
+    "sus": {
+      "thermoschock": 1.5,
+      "frost": 0.8,
+      "tropfen": 0.5,
+      "keile": 0.7,
+      "dampf": 1.4,
+      "strahl": 0.9,
+      "wurzel": 0.7
+    }
+  }
+]

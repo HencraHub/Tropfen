@@ -1,0 +1,292 @@
+{
+  "milestones": [
+    0.2,
+    0.45,
+    0.7
+  ],
+  "nodes": [
+    {
+      "id": "eimerbau",
+      "branch": "wasser",
+      "cost": 30,
+      "ticks": 200,
+      "requires": []
+    },
+    {
+      "id": "rinnenbau",
+      "branch": "wasser",
+      "cost": 60,
+      "ticks": 300,
+      "requires": [
+        "eimerbau"
+      ]
+    },
+    {
+      "id": "rohrguss",
+      "branch": "wasser",
+      "cost": 160,
+      "ticks": 500,
+      "requires": [
+        "rinnenbau"
+      ]
+    },
+    {
+      "id": "pumpwerk",
+      "branch": "wasser",
+      "cost": 140,
+      "ticks": 400,
+      "requires": [
+        "rinnenbau"
+      ]
+    },
+    {
+      "id": "hochtank",
+      "branch": "wasser",
+      "cost": 140,
+      "ticks": 400,
+      "requires": [
+        "rinnenbau"
+      ]
+    },
+    {
+      "id": "flussanzapfung",
+      "branch": "wasser",
+      "cost": 120,
+      "ticks": 500,
+      "requires": [
+        "rinnenbau"
+      ]
+    },
+    {
+      "id": "wasserrad",
+      "branch": "kraft",
+      "cost": 120,
+      "ticks": 300,
+      "requires": [
+        "eimerbau"
+      ]
+    },
+    {
+      "id": "windrad",
+      "branch": "kraft",
+      "cost": 120,
+      "ticks": 300,
+      "requires": [
+        "eimerbau"
+      ]
+    },
+    {
+      "id": "dampfmaschine",
+      "branch": "kraft",
+      "cost": 300,
+      "ticks": 600,
+      "requires": [
+        "wasserrad|windrad",
+        "feuerstelle"
+      ]
+    },
+    {
+      "id": "strahlwerk",
+      "branch": "kraft",
+      "cost": 450,
+      "ticks": 800,
+      "requires": [
+        "dampfmaschine|pumpwerk",
+        "sandgrube"
+      ]
+    },
+    {
+      "id": "brennspiegel",
+      "branch": "hitze",
+      "cost": 70,
+      "ticks": 250,
+      "requires": []
+    },
+    {
+      "id": "feuerstelle",
+      "branch": "hitze",
+      "cost": 50,
+      "ticks": 200,
+      "requires": []
+    },
+    {
+      "id": "dampfbohrung",
+      "branch": "hitze",
+      "cost": 220,
+      "ticks": 500,
+      "requires": [
+        "feuerstelle|brennspiegel",
+        "tiefbohrer"
+      ]
+    },
+    {
+      "id": "sicherheitsventil",
+      "branch": "hitze",
+      "cost": 180,
+      "ticks": 400,
+      "requires": [
+        "dampfbohrung"
+      ]
+    },
+    {
+      "id": "sonnensegel",
+      "branch": "kaelte",
+      "cost": 60,
+      "ticks": 200,
+      "requires": []
+    },
+    {
+      "id": "nachtwache",
+      "branch": "kaelte",
+      "cost": 90,
+      "ticks": 300,
+      "requires": [
+        "sonnensegel"
+      ]
+    },
+    {
+      "id": "eiskeller",
+      "branch": "kaelte",
+      "cost": 240,
+      "ticks": 500,
+      "requires": [
+        "nachtwache"
+      ]
+    },
+    {
+      "id": "bohrer",
+      "branch": "werk",
+      "cost": 50,
+      "ticks": 200,
+      "requires": []
+    },
+    {
+      "id": "quellkeile",
+      "branch": "werk",
+      "cost": 80,
+      "ticks": 250,
+      "requires": [
+        "bohrer"
+      ]
+    },
+    {
+      "id": "tiefbohrer",
+      "branch": "werk",
+      "cost": 150,
+      "ticks": 400,
+      "requires": [
+        "bohrer"
+      ]
+    },
+    {
+      "id": "bohrtrupp",
+      "branch": "werk",
+      "cost": 120,
+      "ticks": 300,
+      "requires": [
+        "bohrer"
+      ]
+    },
+    {
+      "id": "sandgrube",
+      "branch": "werk",
+      "cost": 100,
+      "ticks": 300,
+      "requires": [
+        "bohrer"
+      ]
+    },
+    {
+      "id": "setzlinge",
+      "branch": "gruen",
+      "cost": 60,
+      "ticks": 200,
+      "requires": []
+    },
+    {
+      "id": "bewaesserungsring",
+      "branch": "gruen",
+      "cost": 120,
+      "ticks": 350,
+      "requires": [
+        "setzlinge",
+        "rinnenbau"
+      ]
+    },
+    {
+      "id": "wurzelwerk",
+      "branch": "gruen",
+      "cost": 180,
+      "ticks": 400,
+      "requires": [
+        "setzlinge"
+      ]
+    },
+    {
+      "id": "marktstand",
+      "branch": "handel",
+      "cost": 60,
+      "ticks": 200,
+      "requires": []
+    },
+    {
+      "id": "tribuene",
+      "branch": "handel",
+      "cost": 100,
+      "ticks": 300,
+      "requires": [
+        "marktstand"
+      ]
+    },
+    {
+      "id": "buergschaft",
+      "branch": "handel",
+      "cost": 120,
+      "ticks": 300,
+      "requires": [
+        "marktstand"
+      ]
+    },
+    {
+      "id": "baracke",
+      "branch": "handel",
+      "cost": 100,
+      "ticks": 300,
+      "requires": []
+    },
+    {
+      "id": "schreibstube",
+      "branch": "handel",
+      "cost": 80,
+      "ticks": 200,
+      "requires": []
+    },
+    {
+      "id": "tropfstelle",
+      "branch": "tropfen",
+      "cost": 70,
+      "ticks": 250,
+      "requires": [
+        "rinnenbau"
+      ]
+    },
+    {
+      "id": "feinjustierung",
+      "branch": "tropfen",
+      "cost": 140,
+      "ticks": 400,
+      "requires": [
+        "tropfstelle"
+      ]
+    },
+    {
+      "id": "doppeltropf",
+      "branch": "tropfen",
+      "cost": 200,
+      "ticks": 500,
+      "requires": [
+        "feinjustierung"
+      ]
+    }
+  ]
+}

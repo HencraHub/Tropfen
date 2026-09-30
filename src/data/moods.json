@@ -1,0 +1,9 @@
+[
+  { "id": "wasserscheu", "evap": 1.4 },
+  { "id": "morgenmuffel", "morningSun": 0.4 },
+  { "id": "hitzkopf", "cooling": 0.6 },
+  { "id": "frostbeule", "frost": 1.3, "wetDecay": 1.5 },
+  { "id": "dickschaedel", "hp": 1.15, "weak": 2.5 },
+  { "id": "plappermaul", "spectacle": 1.3, "tapTicks": 30 },
+  { "id": "nachtaktiv", "night": 1.2, "day": 0.9 }
+]

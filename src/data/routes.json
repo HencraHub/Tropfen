@@ -1,0 +1,45 @@
+{
+  "rinne": {
+    "costPerM": 3,
+    "woodPerM": 0.2,
+    "capacity": 2.0,
+    "minGrade": 0.01,
+    "lossPer10m": 0.01,
+    "decayPerDay": 0.08,
+    "stormDamage": 0.3,
+    "requires": "rinnenbau",
+    "freezes": true
+  },
+  "rohr": {
+    "costPerM": 9,
+    "woodPerM": 0,
+    "capacity": 3.0,
+    "minGrade": -1,
+    "lossPer10m": 0.002,
+    "decayPerDay": 0.03,
+    "stormDamage": 0.05,
+    "requires": "rohrguss",
+    "freezes": false
+  },
+  "pumpe": {
+    "cost": 180,
+    "lift": 3.0,
+    "energyPerMLs": 0.02,
+    "decayPerDay": 0.05,
+    "requires": "pumpwerk"
+  },
+  "repairTicks": 80,
+  "carry": {
+    "traegerSpeed": 3.8,
+    "traegerCarry": 10,
+    "spill": 0.05,
+    "stormSpill": 0.12,
+    "stumble": 0.02,
+    "stumbleTicks": 20,
+    "chainPerWorker": 0.35,
+    "chainSpacing": 8,
+    "chainSpill": 0.03,
+    "eselCarry": 120,
+    "eselSpeed": 2.0
+  }
+}

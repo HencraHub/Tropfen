@@ -1,0 +1,34 @@
+{
+  "name": "tropfen",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ein Tropfen auf den heißen Stein – Strategiespiel",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "server": "tsx src/server/main.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run typecheck && vitest run",
+    "balance": "tsx src/balance/run.ts",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts",
+    "screenshots": "tsx scripts/screenshots.ts",
+    "electron:dev": "npm run build && electron dist-electron/main.cjs",
+    "electron:build": "npm run build && tsc -p src/electron/tsconfig.json && electron-builder"
+  },
+  "dependencies": {
+    "three": "^0.186.1",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.0.0",
+    "@types/three": "^0.186.0",
+    "@types/ws": "^8.18.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.1",
+    "vitest": "5.0.2"
+  }
+}

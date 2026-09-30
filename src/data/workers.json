@@ -1,0 +1,25 @@
+[
+  {
+    "id": "traeger",
+    "hire": 30,
+    "wage": 12
+  },
+  {
+    "id": "esel",
+    "hire": 150,
+    "wage": 8,
+    "requires": "eimerbau"
+  },
+  {
+    "id": "bohrtrupp",
+    "hire": 90,
+    "wage": 25,
+    "requires": "bohrtrupp"
+  },
+  {
+    "id": "wart",
+    "hire": 60,
+    "wage": 18,
+    "requires": "rinnenbau"
+  }
+]

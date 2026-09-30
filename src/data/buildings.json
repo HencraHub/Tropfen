@@ -1,0 +1,168 @@
+[
+  {
+    "id": "fass",
+    "cost": 40,
+    "wood": 0,
+    "buildTicks": 100,
+    "tank": 200,
+    "near": "stone"
+  },
+  {
+    "id": "zisterne",
+    "cost": 200,
+    "wood": 2,
+    "buildTicks": 200,
+    "tank": 1000,
+    "near": "stone",
+    "requires": "rinnenbau"
+  },
+  {
+    "id": "hochtank",
+    "cost": 400,
+    "wood": 4,
+    "buildTicks": 300,
+    "tank": 2000,
+    "near": "stone",
+    "valve": true,
+    "requires": "hochtank"
+  },
+  {
+    "id": "brennspiegel",
+    "cost": 140,
+    "wood": 1,
+    "buildTicks": 150,
+    "zone": true,
+    "heatPerHour": 25,
+    "needsSun": true,
+    "requires": "brennspiegel"
+  },
+  {
+    "id": "feuerstelle",
+    "cost": 60,
+    "wood": 2,
+    "buildTicks": 100,
+    "zone": true,
+    "heatPerHour": 32,
+    "woodPerMinute": 1,
+    "requires": "feuerstelle"
+  },
+  {
+    "id": "sonnensegel",
+    "cost": 90,
+    "wood": 2,
+    "buildTicks": 120,
+    "zone": true,
+    "shade": 0.7,
+    "requires": "sonnensegel"
+  },
+  {
+    "id": "eiskeller",
+    "cost": 300,
+    "wood": 3,
+    "buildTicks": 250,
+    "zone": true,
+    "coolPerHour": 12,
+    "requires": "eiskeller"
+  },
+  {
+    "id": "wasserrad",
+    "cost": 250,
+    "wood": 4,
+    "buildTicks": 250,
+    "energy": 3,
+    "needs": "waterwheel",
+    "requires": "wasserrad"
+  },
+  {
+    "id": "windrad",
+    "cost": 220,
+    "wood": 3,
+    "buildTicks": 250,
+    "energyWind": 2.5,
+    "requires": "windrad"
+  },
+  {
+    "id": "tretmuehle",
+    "cost": 90,
+    "wood": 2,
+    "buildTicks": 120,
+    "energyWorker": 0.8,
+    "requires": "pumpwerk"
+  },
+  {
+    "id": "dampfmaschine",
+    "cost": 600,
+    "wood": 5,
+    "buildTicks": 350,
+    "energy": 6,
+    "woodPerMinute": 1,
+    "requires": "dampfmaschine"
+  },
+  {
+    "id": "strahlwerk",
+    "cost": 900,
+    "wood": 6,
+    "buildTicks": 400,
+    "near": "stone",
+    "zone": true,
+    "requires": "strahlwerk"
+  },
+  {
+    "id": "sandgrube",
+    "cost": 150,
+    "wood": 1,
+    "buildTicks": 150,
+    "sandPerMinute": 4,
+    "requires": "sandgrube"
+  },
+  {
+    "id": "tribuene",
+    "cost": 180,
+    "wood": 5,
+    "buildTicks": 200,
+    "spectacle": 1.8,
+    "requires": "tribuene"
+  },
+  {
+    "id": "marktstand",
+    "cost": 120,
+    "wood": 2,
+    "buildTicks": 150,
+    "near": "village",
+    "requires": "marktstand"
+  },
+  {
+    "id": "baracke",
+    "cost": 160,
+    "wood": 4,
+    "buildTicks": 200,
+    "workers": 4,
+    "requires": "baracke"
+  },
+  {
+    "id": "schreibstube",
+    "cost": 130,
+    "wood": 2,
+    "buildTicks": 150,
+    "researchSpeed": 2,
+    "requires": "schreibstube"
+  },
+  {
+    "id": "regenfang",
+    "cost": 80,
+    "wood": 2,
+    "buildTicks": 120,
+    "near": "stone",
+    "tank": 300,
+    "collects": "regen"
+  },
+  {
+    "id": "taunetz",
+    "cost": 70,
+    "wood": 1,
+    "buildTicks": 100,
+    "near": "stone",
+    "tank": 150,
+    "collects": "tau"
+  }
+]
