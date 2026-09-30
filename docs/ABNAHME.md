@@ -52,13 +52,16 @@ Nicht durch Angleichen erreicht: die Anfälligkeiten je Gestein und die Formeln 
 ## 3. `npm run test:e2e` – Exit-Code 0
 Playwright startet Koop-Server (Port 8787) und Vite-Vorschau selbst; Headless-Chromium mit Software-Rendering, Zeitraffer `speed=120`, `gfx=low`.
 ```
-Running 4 tests using 1 worker
-  ✓  1 e2e/coop.spec.ts:4:1 › Koop mit drei Clients bis zur Spaltung, Weltzustand auf allen Clients identisch (45.2s)
-  ✓  2 e2e/race.spec.ts:4:1 › Rennen mit drei Clients bis zur Rangliste (1.1m)
-  ✓  3 e2e/reconnect.spec.ts:4:1 › Verbindungsabbruch mit Wiedereinstieg (Koop, zwei Clients) (55.8s)
-  ✓  4 e2e/solo.spec.ts:4:1 › Solo-Partie vom ersten Schöpfen bis zur Spaltung (Zeitraffer, ohne Laufzeitfehler) (1.0m)
-  4 passed (3.9m)
+Running 5 tests using 1 worker
+  ✓  1 e2e/coop.spec.ts:4:1 › Koop mit drei Clients bis zur Spaltung, Weltzustand auf allen Clients identisch (50.4s)
+  ✓  2 e2e/menu.spec.ts:21:1 › Menüs per Maus und Tastatur: Neues Spiel, Start, Pause, Einstellungen (11.7s)
+  ✓  3 e2e/race.spec.ts:4:1 › Rennen mit drei Clients bis zur Rangliste (1.3m)
+  ✓  4 e2e/reconnect.spec.ts:4:1 › Verbindungsabbruch mit Wiedereinstieg (Koop, zwei Clients) (55.3s)
+  ✓  5 e2e/solo.spec.ts:4:1 › Solo-Partie vom ersten Schöpfen bis zur Spaltung (Zeitraffer, ohne Laufzeitfehler) (1.0m)
+  5 passed (4.3m)
 ```
+Nachtrag: Bei der ersten Abnahme reagierten die Menüknöpfe weder auf Klick noch auf Enter (Aktivierung wurde erst nach dem Zeichnen gesetzt und im nächsten Bild gelöscht; Klickpositionen in Fenster- statt Canvas-Koordinaten; kein Touch). Behoben in 86e4ef8, seither prüft `e2e/menu.spec.ts` Hauptmenü → Neues Spiel → Start → Pause → Einstellungen → Weiter per Maus und Tastatur.
+- Menüs: Klick- und Tastaturbedienung der Menüs über die Widget-Liste des zuletzt gezeichneten Bildes (`e2e/menu.spec.ts`).
 - Solo: erstes Schöpfen wird über den Spielzustand erkannt, die Partie läuft bis `finished`, `pageerror`/Konsolenfehler brechen den Test ab (`e2e/solo.spec.ts`).
 - Koop: drei Clients (zwei Team-Bots, ein Keilschläger) in einem Raum mit Raumcode; bis zur Spaltung werden Tick und `hashState()` aller Clients verglichen, Resyncs müssen 0 sein (`e2e/coop.spec.ts`).
 - Rennen: drei Clients, je ein Stein, bis die Rangliste erscheint (`e2e/race.spec.ts`).
