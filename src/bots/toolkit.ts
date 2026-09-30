@@ -114,7 +114,7 @@ export class BotCtx {
     if (!bd || !this.has(bd.requires ?? '')) return false;
     if (bd.needs === 'waterwheel' && !landscapeDef(this.state.landscape).waterwheel) return false;
     if (bd.zone && zone !== undefined && this.building(type, zone)) return false;
-    if (!bd.zone && bd.tank === undefined && bd.energy === undefined && bd.energyWind === undefined && bd.energyWorker === undefined && this.building(type)) return false;
+    if (!bd.zone && bd.tank === undefined && bd.energy === undefined && bd.energyWind === undefined && bd.energyWorker === undefined && bd.sandPerMinute === undefined && this.building(type)) return false;
     if (this.wood < (bd.wood ?? 0)) { this.buyWood((bd.wood ?? 0) - this.wood); return false; }
     if (!this.saveFor(bd.cost)) return false;
     let at = pos;
@@ -242,7 +242,7 @@ export class BotCtx {
   repairWorst(threshold = 0.5): boolean {
     let worst: string | null = null; let wc = threshold;
     for (const r of this.state.routes) if (r.condition < wc) { wc = r.condition; worst = r.id; }
-    for (const b of this.state.buildings) if (b.active && b.condition < wc) { wc = b.condition; worst = b.id; }
+    for (const b of this.state.buildings) if (b.condition < wc) { wc = b.condition; worst = b.id; } // a storm-broken windmill is inactive and needs the repair most
     if (!worst) return false;
     this.out.push({ t: 'repair', p: this.pid, id: worst });
     return true;

@@ -71,6 +71,13 @@ function shadeLine(c: BotCtx, zones: number[]): void {
   if (c.has('sonnensegel')) for (const z of zones) c.build('sonnensegel', z);
 }
 
+/** Zones ranked for wedges: weak spots count fully, off-line zones half (Abklopfen: Keile nur in Schwachstellen). */
+export function wedgeOrder(c: BotCtx, n: number): number[] {
+  const line = c.state.stone.line;
+  const score = (z: number) => c.zone(z).weak * (z % 4 === line ? 1 : 0.5);
+  return [0, 1, 2, 3, 4, 5, 6, 7].sort((a, b) => score(b) - score(a) || a - b).slice(0, n);
+}
+
 /** The route into the stone that every strategy wants first; blocks lower priorities while saving for it. */
 function coreRoute(c: BotCtx, target: WaterTarget & { kind: 'zone' | 'building' }): boolean {
   c.ensureEnergy();
@@ -289,8 +296,8 @@ export const keilschlaeger: Strategy = {
     const la = shadyLineZone(c), lb = (la + 4) % 8;
     const land = landscapeDef(c.state.landscape);
     const maxW = content.methods.keile.maxWedges;
-    // scarce water: six half-wet wedge zones lose to two soaked line zones (off-line zones count 50 % anyway)
-    const need = c.scarceWater() ? [la, lb] : [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8];
+    // scarce water: three soaked zones beat six half-wet ones; the best zones are weak spots on the line
+    const need = wedgeOrder(c, c.scarceWater() ? 3 : 8);
     c.mem.keepTargets = true;
     c.ensureCarriers(3, { kind: 'zone', zone: la });
     const withWedges = need.filter((z) => c.zone(z).wedges > 0);
@@ -330,7 +337,7 @@ export const keilschlaeger: Strategy = {
     if (c.repairWorst(0.45)) return;
     const la = shadyLineZone(c), lb = (la + 4) % 8;
     const maxW = content.methods.keile.maxWedges;
-    const order = c.scarceWater() ? [la, lb] : [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8, (la + 2) % 8, (lb + 2) % 8];
+    const order = wedgeOrder(c, c.scarceWater() ? 3 : 8);
     if (c.hasTool('bohrer')) {
       if (c.has('quellkeile') && c.wood >= 1) { const wz = order.find((z) => c.zone(z).wedges < c.zone(z).holes); if (wz !== undefined) { c.wedge(wz); return; } }
       const dz = order.find((z) => c.zone(z).holes < maxW && (z % 4 === c.state.stone.line || c.progress > 0.08));
