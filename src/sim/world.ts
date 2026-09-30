@@ -2,12 +2,13 @@ import { Rng, makeRngState } from './rng';
 import { content, landscapeDef, rockDef, moodDef } from './content';
 import type { GameConfig, GameState, ZoneState, Player, StoneState, SourceState, MethodId, Vec2 } from './types';
 import { ZONES } from './types';
+import { dsin, dcos, PI } from './dmath';
 
 export const STONE_RADIUS = 6;
 
 export function zoneDir(zone: number): Vec2 {
-  const a = (zone / ZONES) * Math.PI * 2; // 0 = north (+z), clockwise
-  return { x: Math.sin(a), z: Math.cos(a) };
+  const a = (zone / ZONES) * PI * 2; // 0 = north (+z), clockwise
+  return { x: dsin(a), z: dcos(a) };
 }
 
 /** Position where a player stands to work on a zone. */

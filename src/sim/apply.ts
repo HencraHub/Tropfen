@@ -5,6 +5,7 @@ import type { Command } from './commands';
 import type { GameState, Player, Building, Route, Vec2, WorkerTask, RouteTarget } from './types';
 import { ZONES } from './types';
 import { newId, zonePos } from './world';
+import { dhypot, dsin, PI } from './dmath';
 import { spend } from './water';
 
 function log(state: GameState, kind: string, extra: Partial<{ zone: number; value: number; id: string; player: string; text: string }> = {}): void {
@@ -17,7 +18,7 @@ export function findPlayer(state: GameState, id: string): Player | undefined {
 }
 
 export function stoneEdgeDist(state: GameState, pos: Vec2): number {
-  return Math.max(0, Math.hypot(pos.x, pos.z) - state.stone.radius);
+  return Math.max(0, dhypot(pos.x, pos.z) - state.stone.radius);
 }
 
 function targetFor(state: GameState, cmd: Command): Vec2 | null {
@@ -94,7 +95,7 @@ export function executeNow(state: GameState, p: Player, cmd: Command): void {
   const eco = content.economy;
   switch (cmd.t) {
     case 'move': {
-      const len = Math.hypot(cmd.dx, cmd.dz);
+      const len = dhypot(cmd.dx, cmd.dz);
       p.moveDir = len > 0.01 ? { x: cmd.dx / Math.max(1, len), z: cmd.dz / Math.max(1, len) } : null;
       if (cmd.yaw !== undefined) p.yaw = cmd.yaw;
       if (p.moveDir) { p.moveTarget = null; p.queue = []; if (p.action && p.action.kind !== 'stun') p.action = null; }
@@ -257,7 +258,7 @@ export function executeNow(state: GameState, p: Player, cmd: Command): void {
       if (!spend(state, bd.cost)) return;
       state.eco.wood -= wood;
       const pos = bd.zone ? zonePos(state, cmd.zone!) : { x: cmd.x, z: cmd.z };
-      if (bd.zone) { const d = Math.hypot(pos.x, pos.z); pos.x *= (d + 2) / d; pos.z *= (d + 2) / d; }
+      if (bd.zone) { const d = dhypot(pos.x, pos.z); pos.x *= (d + 2) / d; pos.z *= (d + 2) / d; }
       const b: Building = {
         id: newId(state, 'b'), type: cmd.type, pos, zone: bd.zone ? cmd.zone! : null, ticksToBuild: bd.buildTicks,
         liters: 0, cap: bd.tank ?? (cmd.type === 'strahlwerk' ? 500 : 0), out: null, workers: [], active: false, condition: 1, timer: 0, temp: 15,
@@ -446,12 +447,12 @@ export function straightRoute(state: GameState, from: string, to: RouteTarget, s
   const start = src ? src.pos : fromB ? fromB.pos : { x: 0, z: 0 };
   const end = to.kind === 'building' ? (state.buildings.find((b) => b.id === (to as { id: string }).id)?.pos ?? { x: 0, z: 0 }) : zonePos(state, to.zone);
   const dx = end.x - start.x, dz = end.z - start.z;
-  const len = Math.hypot(dx, dz) || 1;
+  const len = dhypot(dx, dz) || 1;
   const nx = -dz / len, nz = dx / len;
   const pts: Vec2[] = [];
   for (let i = 0; i <= segments; i++) {
     const t = i / segments;
-    const off = bend * Math.sin(Math.PI * t);
+    const off = bend * dsin(PI * t);
     pts.push({ x: start.x + dx * t + nx * off, z: start.z + dz * t + nz * off });
   }
   return pts;

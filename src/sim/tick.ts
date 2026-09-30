@@ -8,6 +8,7 @@ import { TICKS_PER_DAY, TICKS_PER_HOUR, ZONES } from './types';
 import { applyCommand, executeNow, carryTool, commandTarget, interactDistance } from './apply';
 import { waterOnZone, earn, sourceRate, spend } from './water';
 import { zonePos, rollWeather } from './world';
+import { dhypot, dpow } from './dmath';
 
 const DT = 0.1;          // seconds per tick
 const DT_H = 1 / TICKS_PER_HOUR; // hours per tick
@@ -24,14 +25,16 @@ export function step(state: GameState, commands: readonly Command[] = []): void 
   const rng = new Rng(state.rng);
   updateCalendar(state, rng);
   updateEnergyAndBuildings(state, rng);
-  updateSourcesAndRoutes(state);
+  refillSources(state);
   updateChains(state);
+  updateSourcesAndRoutes(state);
   updatePlayers(state, rng);
   updateWorkers(state, rng);
   updateStone(state, rng);
   updateEconomy(state, rng);
   updateResearch(state, rng);
   updateEvents(state, rng);
+  if (state.syncCall && state.tick > state.syncCall.tick + 30) state.syncCall = null;
   if (state.stone.progress >= state.stone.hp && !state.finished) {
     state.stone.progress = state.stone.hp;
     state.finished = { tick: state.tick };
@@ -125,10 +128,6 @@ function updateSourcesAndRoutes(state: GameState): void {
   const A = ambient(state);
   const w = weatherNow(state);
   const lossPerk = perkValue(state, 'routeLoss', 1);
-  for (const s of state.sources) {
-    if (!s.unlocked && s.requires && hasResearch(state, s.requires)) s.unlocked = true;
-    s.store = Math.min(s.storeCap, s.store + sourceRate(state, s.id) * DT);
-  }
   const decayStorm = w.wind > 2 ? 1 : 0;
   for (const r of state.routes) {
     const def = content.routes[r.kind];
@@ -182,7 +181,15 @@ function updateSourcesAndRoutes(state: GameState): void {
   void land;
 }
 
-// ---------------------------------------------------------------- chains
+// ---------------------------------------------------------------- sources
+function refillSources(state: GameState): void {
+  for (const s of state.sources) {
+    if (!s.unlocked && s.requires && hasResearch(state, s.requires)) s.unlocked = true;
+    s.store = Math.min(s.storeCap, s.store + sourceRate(state, s.id) * DT);
+  }
+}
+
+// ---------------------------------------------------------------- chains (hands scoop before the channels take the rest)
 function updateChains(state: GameState): void {
   const c = content.routes.carry;
   const strike = state.eco.strike || eventFlag(state, 'strike');
@@ -201,7 +208,7 @@ function updateChains(state: GameState): void {
     src.store -= take;
     const delivered = take * (1 - c.chainSpill);
     ch.flow = delivered / DT;
-    if (ch.target.kind === 'zone') waterOnZone(state, ch.target.zone, delivered, src.temp, false);
+    if (ch.target.kind === 'zone') waterOnZone(state, ch.target.zone, delivered, src.temp, false, hasResearch(state, 'tropfstelle'));
     else {
       const b = state.buildings.find((x) => x.id === (ch.target as { id: string }).id);
       if (b && b.cap > 0) { const add = Math.min(b.cap - b.liters, delivered); b.temp = b.liters + add > 0 ? (b.temp * b.liters + src.temp * add) / (b.liters + add) : src.temp; b.liters += add; }
@@ -213,7 +220,7 @@ function updateChains(state: GameState): void {
 function moveToward(state: GameState, pos: Vec2, target: Vec2, speed: number): boolean {
   const land = landscapeDef(state.landscape);
   const dx = target.x - pos.x, dz = target.z - pos.z;
-  const d = Math.hypot(dx, dz);
+  const d = dhypot(dx, dz);
   if (d < 1e-6) return true;
   const ux = dx / d, uz = dz / d;
   const h0 = heightAt(land, pos.x, pos.z);
@@ -223,15 +230,15 @@ function moveToward(state: GameState, pos: Vec2, target: Vec2, speed: number): b
   const stepLen = Math.min(d, sp * DT);
   let nx = pos.x + ux * stepLen, nz = pos.z + uz * stepLen;
   const r = state.stone.radius + 0.6;
-  if (Math.hypot(nx, nz) < r && Math.hypot(target.x, target.z) > r - 0.01) {
+  if (dhypot(nx, nz) < r && dhypot(target.x, target.z) > r - 0.01) {
     // slide around the stone along the tangent that leads toward the target
-    const pr = Math.hypot(pos.x, pos.z) || 1;
+    const pr = dhypot(pos.x, pos.z) || 1;
     const rx = pos.x / pr, rz = pos.z / pr;
     const t1 = { x: -rz, z: rx }, t2 = { x: rz, z: -rx };
     const dot1 = t1.x * ux + t1.z * uz, dot2 = t2.x * ux + t2.z * uz;
     const t = dot1 >= dot2 ? t1 : t2;
     nx = pos.x + t.x * stepLen; nz = pos.z + t.z * stepLen;
-    const nr = Math.hypot(nx, nz) || 1;
+    const nr = dhypot(nx, nz) || 1;
     nx *= Math.max(r, nr) / nr; nz *= Math.max(r, nr) / nr;
     pos.x = nx; pos.z = nz;
     return false;
@@ -243,7 +250,7 @@ function moveToward(state: GameState, pos: Vec2, target: Vec2, speed: number): b
 
 function keepOutOfStone(state: GameState, pos: Vec2): void {
   const r = state.stone.radius + 0.6;
-  const d = Math.hypot(pos.x, pos.z);
+  const d = dhypot(pos.x, pos.z);
   if (d < r) {
     if (d < 1e-6) { pos.x = r; return; }
     pos.x *= r / d; pos.z *= r / d;
@@ -550,7 +557,7 @@ function updateStone(state: GameState, rng: Rng): void {
     if (bd.shade) shade[b.zone] = Math.max(shade[b.zone], bd.shade);
     if (bd.heatPerHour && bd.needsSun && sunW > 0.3) heat[b.zone] += bd.heatPerHour * sunW;
     if (bd.heatPerHour && !bd.needsSun && b.timer > 0) heat[b.zone] += bd.heatPerHour;
-    if (bd.coolPerHour && night) { cool[b.zone] += bd.coolPerHour; cool[(b.zone + 1) % ZONES] += bd.coolPerHour * 0.5; cool[(b.zone + 7) % ZONES] += bd.coolPerHour * 0.5; }
+    if (bd.coolPerHour && night) { cool[b.zone] += bd.coolPerHour; cool[(b.zone + 1) % ZONES] += bd.coolPerHour * 0.25; cool[(b.zone + 7) % ZONES] += bd.coolPerHour * 0.25; }
   }
   // drip ranking
   const dripRank: number[] = [];
@@ -582,7 +589,8 @@ function updateStone(state: GameState, rng: Rng): void {
     const wetDecay = (0.15 + 0.01 * Math.max(0, z.T - 20)) * wetDecayMood * DT_H;
     z.wet = Math.max(0, z.wet - wetDecay);
     z.wedgeWet = Math.max(0, z.wedgeWet - (0.06 + 0.004 * Math.max(0, z.T - 20)) * m.keile.wetDecay * DT_H);
-    if (z.fill > 0 && !z.frozen) z.fill = Math.max(0, z.fill - z.fill * 0.02 * DT_H * Math.max(0, z.T - 20) / 20);
+    // water in the cracks drains and evaporates while the stone is warm: frost rewards evening timing and shade
+    if (z.fill > 0 && !z.frozen) z.fill = Math.max(0, z.fill - z.fill * m.frost.drainPerHour * DT_H * Math.max(0, z.T - 15) / 20);
     // frost
     if (z.T < m.frost.freezeBelow && z.fill > 0 && !z.frozen) {
       add('frost', i, m.frost.k * rock.sus.frost * z.fill * frostMood);
@@ -600,8 +608,8 @@ function updateStone(state: GameState, rng: Rng): void {
           if (dT > 0) {
             const ts = m.thermoschock;
             // superlinear up to the knee (synchronised gushes pay off), sublinear beyond (a tank is not a miracle)
-            const effL = z.burst <= ts.knee ? ts.knee * Math.pow(z.burst / ts.knee, ts.expBelow) : ts.knee + Math.pow(z.burst - ts.knee, ts.expAbove);
-            const v = ts.k * rock.sus.thermoschock * effL * Math.pow(dT, ts.exp);
+            const effL = z.burst <= ts.knee ? ts.knee * dpow(z.burst / ts.knee, ts.expBelow) : ts.knee + dpow(z.burst - ts.knee, ts.expAbove);
+            const v = ts.k * rock.sus.thermoschock * effL * dpow(dT, ts.exp);
             add('thermoschock', i, v);
             log(state, 'thermoschock', { zone: i, value: v });
             if (z.burst >= m.thermoschock.spectacleAt) state.eco.spectacle += m.thermoschock.spectacle;
@@ -651,7 +659,7 @@ function updateStone(state: GameState, rng: Rng): void {
     // roots
     if (z.growths.length > 0) {
       const salt = land.salt ? m.wurzel.saltFactor : 1;
-      const heatKill = z.T > 65 ? -0.05 : 0;
+      const heatKill = z.T > m.wurzel.heatFrom ? -m.wurzel.heatKillPer20 * (z.T - m.wurzel.heatFrom) / 20 : 0;
       let sum2 = 0;
       for (let k = 0; k < z.growths.length; k++) {
         let g = z.growths[k];
@@ -704,7 +712,7 @@ function updateEconomy(state: GameState, rng: Rng): void {
   const spMult = tribuene * eventValue(state, 'spectacle', 1) * moodValue(state, 'spectacle', 1) * perkValue(state, 'spectacle', 1);
   if (state.eco.spectacle > 0) {
     earn(state, (eco.spectacle.incomePerMinute / 600) * state.eco.spectacle * spMult, 'spectators');
-    state.eco.spectacle *= Math.pow(1 - eco.spectacle.decayPerMinute, 1 / 600);
+    state.eco.spectacle *= dpow(1 - eco.spectacle.decayPerMinute, 1 / 600);
     if (state.eco.spectacle < 0.05) state.eco.spectacle = 0;
   }
   void rng;

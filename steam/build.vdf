@@ -1,0 +1,14 @@
+"AppBuild"
+{
+  "AppID" "480"                     // eigene App-ID eintragen
+  "Desc" "Ein Tropfen auf den heißen Stein"
+  "ContentRoot" "../release/win-unpacked/"
+  "BuildOutput" "../release/steam-output/"
+  "Depots"
+  {
+    "481"                            // Depot-ID eintragen
+    {
+      "FileMapping" { "LocalPath" "*" "DepotPath" "." "recursive" "1" }
+    }
+  }
+}

@@ -75,19 +75,19 @@ runAll().then((results) => {
     const greedy = aggs.find((a) => a.bot === GREEDY.id);
     const coopA = aggs.find((a) => a.bot === 'coop_abgestimmt');
     const coopN = aggs.find((a) => a.bot === 'coop_nebeneinander');
-    const bestTime = Math.min(...solo.map((a) => a.mean));
-    const fastest = solo.find((a) => a.mean === bestTime)!;
-    fastestCount[fastest.bot] = (fastestCount[fastest.bot] ?? 0) + 1;
+    const key = `${landscape}/${rock}`;
+    const bestTime = solo.length > 0 ? Math.min(...solo.map((a) => a.mean)) : NaN;
+    const fastest = solo.find((a) => a.mean === bestTime);
+    if (fastest) fastestCount[fastest.bot] = (fastestCount[fastest.bot] ?? 0) + 1;
     const within = solo.filter((a) => a.mean <= bestTime * 1.2);
     const distinct = new Set(within.map((a) => a.main ?? a.bot));
-    const key = `${landscape}/${rock}`;
     lines.push(`## ${key}`, '', '| Bot | Zeit (min) | beendet | Hauptmethode |', '|---|---|---|---|');
     for (const a of [...solo, ...(greedy ? [greedy] : []), ...(coopA ? [coopA] : []), ...(coopN ? [coopN] : [])]) lines.push(`| ${a.bot} | ${a.mean.toFixed(1)} | ${a.finished}/${a.times.length} | ${a.main ?? '–'} (${Object.entries(a.mains).map(([m, n]) => `${m} ${n}`).join(', ')}) |`);
-    lines.push('', `Bestzeit ${bestTime.toFixed(1)} min (${fastest.bot}); innerhalb 20 %: ${within.map((a) => `${a.bot}=${a.main}`).join(', ')} → ${distinct.size} Methoden.`);
-    if (distinct.size < 3) violations.push(`(a) ${key}: nur ${distinct.size} verschiedene Hauptmethoden innerhalb 20 % der Bestzeit (${within.map((a) => a.bot + ':' + a.main).join(', ')})`);
+    if (fastest) lines.push('', `Bestzeit ${bestTime.toFixed(1)} min (${fastest.bot}); innerhalb 20 %: ${within.map((a) => `${a.bot}=${a.main}`).join(', ')} → ${distinct.size} Methoden.`);
+    if (solo.length > 0 && distinct.size < 3) violations.push(`(a) ${key}: nur ${distinct.size} verschiedene Hauptmethoden innerhalb 20 % der Bestzeit (${within.map((a) => a.bot + ':' + a.main).join(', ')})`);
     if (greedy) { const ratio = greedy.mean / bestTime; lines.push(`Planlos: ${greedy.mean.toFixed(1)} min = ${ratio.toFixed(2)} × Bestzeit.`); if (ratio < 1.3) violations.push(`(c) ${key}: planloser Bot nur ${ratio.toFixed(2)} × Bestzeit`); }
     if (coopA && coopN) { const ratio = coopA.mean / coopN.mean; lines.push(`Koop abgestimmt ${coopA.mean.toFixed(1)} min vs nebeneinander ${coopN.mean.toFixed(1)} min = ${ratio.toFixed(2)}.`); if (ratio > 0.85) violations.push(`(d) ${key}: abgestimmtes Paar nur ${((1 - ratio) * 100).toFixed(0)} % schneller`); }
-    if (bestTime < 25 || bestTime > 45) violations.push(`(e) ${key}: Bestzeit ${bestTime.toFixed(1)} min außerhalb 25–45`);
+    if (solo.length > 0 && (bestTime < 25 || bestTime > 45)) violations.push(`(e) ${key}: Bestzeit ${bestTime.toFixed(1)} min außerhalb 25–45`);
     lines.push('');
   }
   lines.push('## Schnellster Bot je Kombination', '');

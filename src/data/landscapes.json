@@ -312,7 +312,7 @@
      80
     ],
     "elev": 0,
-    "flow": 0.9,
+    "flow": 1.2,
     "temp": 22,
     "reliability": 1.0,
     "store": 400
@@ -350,7 +350,7 @@
    90,
    -60
   ],
-  "woodPrice": 14,
+  "woodPrice": 10,
   "sandPrice": 0,
   "councilFactor": 1.25,
   "salt": false,

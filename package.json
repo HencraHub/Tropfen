@@ -2,7 +2,7 @@
   "name": "tropfen",
   "version": "0.1.0",
   "private": true,
-  "description": "Ein Tropfen auf den heißen Stein – Strategiespiel",
+  "description": "Ein Tropfen auf den hei\u00dfen Stein \u2013 Strategiespiel",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,8 +14,8 @@
     "balance": "tsx src/balance/run.ts",
     "test:e2e": "playwright test -c e2e/playwright.config.ts",
     "screenshots": "tsx scripts/screenshots.ts",
-    "electron:dev": "npm run build && electron dist-electron/main.cjs",
-    "electron:build": "npm run build && tsc -p src/electron/tsconfig.json && electron-builder"
+    "electron:dev": "npm run build && tsc -p src/electron/tsconfig.json && node scripts/electron-rename.cjs && electron dist-electron/main.js",
+    "electron:build": "npm run build && tsc -p src/electron/tsconfig.json && node scripts/electron-rename.cjs && electron-builder"
   },
   "dependencies": {
     "three": "^0.186.1",

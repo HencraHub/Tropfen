@@ -1,6 +1,7 @@
 import { content, landscapeDef, perkDef, moodDef, eventDef, type WeatherDef } from './content';
 import type { GameState, Vec2 } from './types';
 import { TICKS_PER_DAY, TICKS_PER_HOUR } from './types';
+import { dsin, dcos, dhypot, PI } from './dmath';
 
 export function hourOf(tick: number): number {
   return (tick % TICKS_PER_DAY) / TICKS_PER_HOUR;
@@ -64,7 +65,7 @@ export function ambient(state: GameState): number {
   const night = l.climate.night + perkValue(state, 'nightTemp', 0);
   // smooth bump peaking at 13h
   let s = 0;
-  if (h > 5 && h < 21) s = Math.sin((Math.PI * (h - 5)) / 16);
+  if (h > 5 && h < 21) s = dsin((PI * (h - 5)) / 16);
   return night + (day - night) * s + w.temp;
 }
 
@@ -72,7 +73,7 @@ export function ambient(state: GameState): number {
 export function sunRaw(tick: number): number {
   const h = hourOf(tick);
   if (h < 6 || h > 18) return 0;
-  return Math.sin((Math.PI * (h - 6)) / 12);
+  return dsin((PI * (h - 6)) / 12);
 }
 
 /** Sun on the stone before zone facing: raw × weather × climate × morning mood. */
@@ -90,7 +91,7 @@ export function sunFacing(tick: number, zone: number): number {
   const az = 2 + ((h - 6) / 12) * 4;
   let diff = Math.abs(zone - az);
   diff = Math.min(diff, 8 - diff);
-  return 1 + 0.6 * Math.cos((diff / 8) * Math.PI * 2);
+  return 1 + 0.6 * dcos((diff / 8) * PI * 2);
 }
 
 export function sunOnZone(state: GameState, zone: number): number {
@@ -100,7 +101,7 @@ export function sunOnZone(state: GameState, zone: number): number {
   const az = 2 + ((h - 6) / 12) * 4; // zone index of the sun
   let diff = Math.abs(zone - az);
   diff = Math.min(diff, 8 - diff);
-  const facing = Math.cos((diff / 8) * Math.PI * 2); // 1 facing, -1 opposite
+  const facing = dcos((diff / 8) * PI * 2); // 1 facing, -1 opposite
   return s * (1 + 0.6 * facing);
 }
 
@@ -109,7 +110,7 @@ export function woodPrice(state: GameState): number {
 }
 
 export function dist(a: Vec2, b: Vec2): number {
-  return Math.hypot(a.x - b.x, a.z - b.z);
+  return dhypot(a.x - b.x, a.z - b.z);
 }
 
 export function evapFraction(state: GameState, T: number): number {

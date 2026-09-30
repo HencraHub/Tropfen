@@ -23,7 +23,7 @@ export function waterOnZone(state: GameState, zone: number, liters: number, temp
     earn(state, pay, 'council');
   }
   // wetness and cooling
-  z.wet = Math.min(1, z.wet + eff / 200);
+  z.wet = Math.min(1, z.wet + eff / 40);
   const mass = rock.thermalMass;
   z.T -= (z.T - temp) * Math.min(1, liters / mass);
   // frost fill

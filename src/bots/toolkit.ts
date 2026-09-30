@@ -189,6 +189,8 @@ export class BotCtx {
     const fake = { ...this.state, research: { ...this.state.research, done: [...this.state.research.done, 'rinnenbau'] }, sources: this.state.sources.map((x) => ({ ...x, unlocked: true })) };
     for (const s of land.sources) {
       if (s.kind === 'regen' || s.kind === 'tau') continue;
+      const taken = this.state.routes.filter((r) => r.from === s.id).reduce((a, r) => a + content.routes[r.kind].capacity, 0);
+      if (s.flow - taken < 0.3) continue; // already used up by existing routes
       for (const bend of [0, 18, -18, 32, -32]) {
         const pts = straightRoute(this.state, s.id, to, 8, bend);
         const ev = evaluateRoute(fake, 'rinne', pts, s.id, to, false);
@@ -248,6 +250,7 @@ export class BotCtx {
       if (!s.unlocked || s.kind === 'regen' || s.kind === 'tau') continue;
       const rate = sourceRate(this.state, s.id);
       if (rate <= 0.05) continue;
+      if (s.store < this.carryCap()) continue; // drained by routes: do not queue at a dry source
       let score = dist(ref, s.pos) + Math.hypot(s.pos.x, s.pos.z);
       if (pref === 'cold') score += s.temp * 4;
       if (rate < 1) score += 30 / rate;

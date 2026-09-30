@@ -142,12 +142,14 @@ export const frostwart: Strategy = {
     const [la, lb] = c.lineZones();
     const coldNights = land.climate.night <= -2;
     c.mem.keepTargets = true;
-    c.ensureCarriers(3, { kind: 'zone', zone: la });
-    const frostZones = c.hasRoute({ kind: 'zone', zone: la }) ? [lb, (la + 1) % 8, (lb + 1) % 8, (la + 7) % 8, (lb + 7) % 8] : [la, lb];
+    c.ensureCarriers(c.hasRoute({ kind: 'zone', zone: la }) ? 4 : 3, { kind: 'zone', zone: la });
+    // timing: water poured in the evening survives until the night frost; by day the carriers earn money
+    const fillTime = c.hour >= 13.5 || c.hour < 5;
+    const frostZones = fillTime ? [la, lb, (la + 1) % 8, (lb + 1) % 8, (la + 7) % 8, (lb + 7) % 8] : [la, lb];
     spreadCarriers(c, frostZones.map((z) => ({ kind: 'zone', zone: z }) as WaterTarget));
+    coreRoute(c, { kind: 'zone', zone: la });
     c.researchPlan(['sonnensegel']);
     if (c.has('sonnensegel')) { c.build('sonnensegel', la); c.build('sonnensegel', lb); }
-    coreRoute(c, { kind: 'zone', zone: la });
     if (!coldNights) { c.researchPlan(['nachtwache', 'eiskeller']); if (c.has('eiskeller')) { c.build('eiskeller', la); c.build('eiskeller', lb); } }
     if (c.money > 300 && !c.hasRoute({ kind: 'zone', zone: lb })) c.buildRoute({ kind: 'zone', zone: lb });
     c.carryTools(c.has('eimerbau') ? 'tragjoch' : undefined);
@@ -161,6 +163,8 @@ export const frostwart: Strategy = {
     const [la, lb] = c.lineZones();
     const p = c.progress;
     const cap = content.methods.frost.capBase + content.methods.frost.capPerProgress * p;
+    const fillTime = c.hour >= 13.5 || c.hour < 5;
+    if (!fillTime) { c.carryLoop({ kind: 'zone', zone: c.coldest([la, lb]) }, 'near'); return; }
     const candidates = [la, lb, (la + 1) % 8, (la + 7) % 8, (lb + 1) % 8, (lb + 7) % 8];
     let best = la, bf = Infinity;
     for (const z of candidates) { const f = c.zone(z).fill / cap + (z % 4 === c.state.stone.line ? 0 : 0.5); if (f < bf) { bf = f; best = z; } }
@@ -173,11 +177,13 @@ export const tropfmeister: Strategy = {
   id: 'tropfmeister', main: 'tropfen',
   step(c) {
     keepReserve(c, 5);
-    if (opening(c, 200, ['dichte_rinnen', 'quellrecht', 'ratsgunst', 'zaeher_traeger'])) return;
-    const [la, lb] = c.lineZones();
+    if (opening(c, c.mem.noLoan ? 0 : 200, ['dichte_rinnen', 'quellrecht', 'ratsgunst', 'zaeher_traeger'])) return;
+    const [l0, l1] = c.lineZones();
+    const la = c.mem.dripZone === 1 ? l1 : l0, lb = c.mem.dripZone === 1 ? l0 : l1;
     const r1: WaterTarget & { kind: 'zone' } = { kind: 'zone', zone: la };
     const r2: WaterTarget & { kind: 'zone' } = { kind: 'zone', zone: lb };
-    c.ensureCarriers(c.hasRoute(r1) ? 1 : 3, r1);
+    c.carryTools();
+    if (!c.mem.noCarriers) c.ensureCarriers(c.hasRoute(r1) ? 1 : Math.min(3, (c.mem.maxCarriers as number | undefined) ?? 3), r1);
     if (!coreRoute(c, r1)) return;
     c.researchPlan(['tropfstelle']);
     // buffer: cistern with outlet keeps the streak alive when the channel freezes or runs dry
@@ -191,17 +197,16 @@ export const tropfmeister: Strategy = {
       if (!zi.out || zi.out.zone !== la || Math.abs(zi.out.rate - wantOut) > 0.01) c.setOut(zi.id, la, wantOut);
     }
     c.researchPlan(['feinjustierung', 'doppeltropf']);
-    if (c.has('doppeltropf') && !c.hasRoute(r2)) c.buildRoute(r2);
+    if (c.has('doppeltropf') && !c.hasRoute(r2) && !c.mem.noSecondRoute) c.buildRoute(r2);
     if (c.state.routes.length > 0 && c.workersDoing('maintain') < 1) c.hire('wart', { type: 'maintain' });
     c.researchPlan(['schreibstube', 'rohrguss']);
-    c.carryTools();
-    idleCarriersTo(c, r1);
+    if (!c.mem.noCarriers) idleCarriersTo(c, r1);
   },
   body(c) {
     if (!c.idle()) return;
     if (c.repairWorst(0.4)) return;
-    const [la] = c.lineZones();
-    c.carryLoop({ kind: 'zone', zone: la });
+    const [l0, l1] = c.lineZones();
+    c.carryLoop({ kind: 'zone', zone: c.mem.dripZone === 1 ? l1 : l0 });
   },
 };
 

@@ -37,7 +37,7 @@
     "stumble": 0.02,
     "stumbleTicks": 20,
     "chainPerWorker": 0.35,
-    "chainSpacing": 8,
+    "chainSpacing": 16,
     "chainSpill": 0.03,
     "eselCarry": 120,
     "eselSpeed": 2.0

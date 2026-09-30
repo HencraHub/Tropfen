@@ -1,0 +1,31 @@
+{
+  "style": "Bastel-Diorama (docs/STIL.md)",
+  "note": "Jedes Teil hat eine im Code erzeugte Rückfallversion (src/client/assets/fallbacks.ts). Liegt eine Datei unter 'file', wird sie verwendet, sonst der Rückfall. Das Spiel läuft vollständig ohne Dateien.",
+  "parts": [
+    { "id": "stein_granit", "fallback": "stoneTexture", "file": null, "size": [512, 512], "beschreibung": "Flache Papiertextur für den Granitstein: grauer Tonkarton mit Fasern und dunklen Sprenkeln" },
+    { "id": "stein_kalkstein", "fallback": "stoneTexture", "file": null, "size": [512, 512], "beschreibung": "Papiertextur Kalkstein: cremefarbener Karton mit feinen Schichtlinien" },
+    { "id": "stein_sandstein", "fallback": "stoneTexture", "file": null, "size": [512, 512], "beschreibung": "Papiertextur Sandstein: ockerfarbener Karton mit Körnung" },
+    { "id": "stein_basalt", "fallback": "stoneTexture", "file": null, "size": [512, 512], "beschreibung": "Papiertextur Basalt: dunkelgrauer Karton mit Säulenlinien" },
+    { "id": "papierfaser", "fallback": "paperTexture", "file": null, "size": [256, 256], "beschreibung": "Kachelbare weiße Papierfaser" },
+    { "id": "wellpappe", "fallback": "corrugatedTexture", "file": null, "size": [128, 32], "beschreibung": "Kachelbare Wellpappkante, Wellen 3 mm" },
+    { "id": "watte", "fallback": "cottonTexture", "file": null, "size": [128, 128], "beschreibung": "Freigestellter Wattebausch mit fransigem Rand (Alpha)" },
+    { "id": "wackelauge", "fallback": "eyeTexture", "file": null, "size": [96, 96], "beschreibung": "Wackelauge von vorn: weiße Scheibe, schwarze Pupille, Glanzpunkt" },
+    { "id": "figur_rumpf", "fallback": "figurePart", "file": null, "size": [128, 160], "beschreibung": "Flacher Papprumpf eines Hampelmanns mit Klammerlöchern" },
+    { "id": "figur_kopf", "fallback": "figurePart", "file": null, "size": [96, 96], "beschreibung": "Papierkopf mit aufgeklebtem Hut" },
+    { "id": "figur_arm", "fallback": "figurePart", "file": null, "size": [40, 140], "beschreibung": "Papparm mit Klammerloch oben" },
+    { "id": "figur_bein", "fallback": "figurePart", "file": null, "size": [48, 150], "beschreibung": "Pappbein mit Klammerloch oben" },
+    { "id": "hand_links", "fallback": "figurePart", "file": null, "size": [120, 160], "beschreibung": "Linke Papphand des Spielers, Kraftpapier" },
+    { "id": "hand_rechts", "fallback": "figurePart", "file": null, "size": [120, 160], "beschreibung": "Rechte Papphand des Spielers, Kraftpapier" },
+    { "id": "eimer", "fallback": "toolSprite", "file": null, "size": [96, 96], "beschreibung": "Papp-Eimer mit sichtbarer Klebelasche" },
+    { "id": "klopfhammer", "fallback": "toolSprite", "file": null, "size": [96, 96], "beschreibung": "Klopfhammer aus Holzstäbchen und Pappkopf" },
+    { "id": "bohrer", "fallback": "toolSprite", "file": null, "size": [96, 96], "beschreibung": "Handbohrer aus Zahnstocher und Papprolle" },
+    { "id": "axt", "fallback": "toolSprite", "file": null, "size": [96, 96], "beschreibung": "Axt aus Holzstäbchen und Alufolienblatt" },
+    { "id": "sonne", "fallback": "sunDisc", "file": null, "size": [128, 128], "beschreibung": "Gelbe Pappscheibe mit Tintenkontur (Sonne am Stab)" },
+    { "id": "mond", "fallback": "sunDisc", "file": null, "size": [128, 128], "beschreibung": "Papierweiße Scheibe mit Tintenkontur (Mond am Stab)" },
+    { "id": "wolke", "fallback": "cottonTexture", "file": null, "size": [256, 128], "beschreibung": "Wattewolke an sichtbarem Faden" },
+    { "id": "stempel_rat", "fallback": "stampSprite", "file": null, "size": [200, 80], "beschreibung": "Roter Behördenstempel GEPRÜFT, leicht schief" },
+    { "id": "zettel", "fallback": "paperPanel", "file": null, "size": [400, 200], "beschreibung": "Kraftpapier-Zettel mit gerissenem Rand für Sprechblasen und Bescheide" },
+    { "id": "baum", "fallback": "spriteTree", "file": null, "size": [128, 192], "beschreibung": "Schwammbaum auf Zahnstocher, freigestellt" },
+    { "id": "haus", "fallback": "popupHouse", "file": null, "size": [256, 256], "beschreibung": "Aufklappbares Pop-up-Haus aus Karton, Vorderansicht" }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  { "id": "grundlagen", "seed": "lehrgang-1", "landscape": "flusstal", "rock": "kalkstein", "moods": ["plappermaul"], "startMoney": 150, "method": null,
+    "steps": ["scoop", "pour", "buyTool:eimer", "hire:traeger", "line"] },
+  { "id": "tropfen", "seed": "lehrgang-tropfen", "landscape": "flusstal", "rock": "kalkstein", "moods": ["plappermaul"], "startMoney": 400, "method": "tropfen",
+    "steps": ["research:rinnenbau", "route", "research:tropfstelle", "progress:10"] },
+  { "id": "thermoschock", "seed": "lehrgang-thermo", "landscape": "steppe", "rock": "basalt", "moods": ["hitzkopf"], "startMoney": 900, "method": "thermoschock",
+    "steps": ["research:hochtank", "build:hochtank", "release", "progress:10"] },
+  { "id": "frost", "seed": "lehrgang-frost", "landscape": "hochland", "rock": "granit", "moods": ["frostbeule"], "startMoney": 400, "method": "frost",
+    "steps": ["research:sonnensegel", "build:sonnensegel", "freeze", "progress:10"] },
+  { "id": "keile", "seed": "lehrgang-keile", "landscape": "flusstal", "rock": "sandstein", "moods": ["dickschaedel"], "startMoney": 400, "method": "keile",
+    "steps": ["research:bohrer", "buyTool:bohrer", "drill", "research:quellkeile", "wedge", "progress:10"] },
+  { "id": "dampf", "seed": "lehrgang-dampf", "landscape": "steppe", "rock": "basalt", "moods": ["hitzkopf"], "startMoney": 900, "method": "dampf",
+    "steps": ["research:tiefbohrer", "research:feuerstelle", "research:dampfbohrung", "charge", "progress:10"] },
+  { "id": "strahl", "seed": "lehrgang-strahl", "landscape": "kueste", "rock": "sandstein", "moods": ["wasserscheu"], "startMoney": 2500, "method": "strahl",
+    "steps": ["research:sandgrube", "research:windrad", "research:strahlwerk", "build:strahlwerk", "progress:10"] },
+  { "id": "wurzel", "seed": "lehrgang-wurzel", "landscape": "flusstal", "rock": "kalkstein", "moods": ["plappermaul"], "startMoney": 400, "method": "wurzel",
+    "steps": ["research:setzlinge", "research:bohrer", "plant", "progress:10"] }
+]
