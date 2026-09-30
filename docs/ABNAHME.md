@@ -49,8 +49,21 @@ steppe/basalt           32th    78fr    57tr    42ke    33da    52st    35wu    
 ```
 Nicht durch Angleichen erreicht: die Anfälligkeiten je Gestein und die Formeln der sieben Methoden sind unterschiedlich geblieben (GDD §4/§5); die Balance-Runden haben vor allem Spielweisen der Bots verbessert (Wasserspeicher bei knappen Quellen, Schwachstellen, Zeitfenster) und einzelne Konstanten nachgezogen (docs/ENTSCHEIDUNGEN.md).
 
-## 3. `npm run test:e2e`
-(Ausgabe folgt)
+## 3. `npm run test:e2e` – Exit-Code 0
+Playwright startet Koop-Server (Port 8787) und Vite-Vorschau selbst; Headless-Chromium mit Software-Rendering, Zeitraffer `speed=120`, `gfx=low`.
+```
+Running 4 tests using 1 worker
+  ✓  1 e2e/coop.spec.ts:4:1 › Koop mit drei Clients bis zur Spaltung, Weltzustand auf allen Clients identisch (45.2s)
+  ✓  2 e2e/race.spec.ts:4:1 › Rennen mit drei Clients bis zur Rangliste (1.1m)
+  ✓  3 e2e/reconnect.spec.ts:4:1 › Verbindungsabbruch mit Wiedereinstieg (Koop, zwei Clients) (55.8s)
+  ✓  4 e2e/solo.spec.ts:4:1 › Solo-Partie vom ersten Schöpfen bis zur Spaltung (Zeitraffer, ohne Laufzeitfehler) (1.0m)
+  4 passed (3.9m)
+```
+- Solo: erstes Schöpfen wird über den Spielzustand erkannt, die Partie läuft bis `finished`, `pageerror`/Konsolenfehler brechen den Test ab (`e2e/solo.spec.ts`).
+- Koop: drei Clients (zwei Team-Bots, ein Keilschläger) in einem Raum mit Raumcode; bis zur Spaltung werden Tick und `hashState()` aller Clients verglichen, Resyncs müssen 0 sein (`e2e/coop.spec.ts`).
+- Rennen: drei Clients, je ein Stein, bis die Rangliste erscheint (`e2e/race.spec.ts`).
+- Wiedereinstieg: ein Client trennt die WebSocket-Verbindung, tritt mit seinem Token wieder ein und erhält den Schnappschuss; Hashes stimmen danach überein (`e2e/reconnect.spec.ts`).
+Die Bilder `e2e-koop.png`, `e2e-rennen.png`, `e2e-rangliste.png`, `e2e-solo-fruehphase.png`, `e2e-solo-ergebnis.png` stammen aus diesem Lauf.
 
 ## 4. Screenshots und Abgleich mit docs/STIL.md
 Alle Bilder liegen in `docs/screenshots/` (1280×720, Headless-Chromium mit Software-Rendering, `npm run screenshots`; Koop-, Rennen- und Wiedereinstiegsbilder schreibt `npm run test:e2e`).
