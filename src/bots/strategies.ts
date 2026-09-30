@@ -379,7 +379,7 @@ export const dampfkessel: Strategy = {
     const fires = c.state.buildings.filter((b) => b.type === 'feuerstelle').length;
     const holes = c.zone(sz).deepHoles + c.zone(oz).deepHoles;
     const wantWood = 2 + fires * 3 + (c.has('sicherheitsventil') ? 0 : holes);
-    if (c.wood < wantWood) c.buyWood(Math.min(8, wantWood - c.wood));
+    if (c.wood < wantWood) c.buyWood(Math.max(6, Math.min(10, wantWood - c.wood + 4))); // in batches: every village trip is a missed hot hour
     coreRoute(c, fass ? { kind: 'building', id: fass.id } : { kind: 'zone', zone: (sz + 2) % 8 });
     c.carryTools(c.has('eimerbau') ? 'karren' : undefined);
     if (c.has('feuerstelle') && c.zone(oz).deepHoles > 0) c.build('feuerstelle', oz);
@@ -390,11 +390,17 @@ export const dampfkessel: Strategy = {
     void land;
   },
   body(c) {
-    if (!c.idle()) return;
-    if (c.repairWorst(0.45)) return;
     const m = content.methods.dampf;
     const sz = sunnyLineZone(c);
     const oz = (sz + 4) % 8;
+    // a glowing zone with a free hole preempts everything: drop the errand and charge now
+    if (c.has('dampfbohrung') && c.p.carry >= m.minLiters && (c.has('sicherheitsventil') || c.wood >= 1) && c.p.stun <= 0) {
+      const hot = [sz, oz].filter((z) => c.zone(z).charges.length < c.zone(z).deepHoles && c.zone(z).T >= m.minT);
+      const head = c.p.queue[0] as { t: string } | undefined;
+      if (hot.length > 0 && head && head.t !== 'charge' && !c.p.action) { c.out.push({ t: 'stop', p: c.pid }); c.charge(c.hottest(hot)); return; }
+    }
+    if (!c.idle()) return;
+    if (c.repairWorst(0.45)) return;
     const deepOk = c.hasTool('tiefbohrer');
     const tank = [c.building('zisterne'), c.building('fass')].find((b) => b && b.active && b.liters >= m.minLiters);
     if (c.has('dampfbohrung')) {
