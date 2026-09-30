@@ -24,7 +24,7 @@ export class UI {
     this.frame = frame; this.input = input;
     if (screenKey !== this.screenKey) { this.screenKey = screenKey; this.focus = this.focusById.get(screenKey) ?? 0; }
     this.items = [];
-    this.activated = null;
+    // `activated` is NOT cleared here: end() of the previous frame set it, the widgets of this frame consume it
     this.hoverId = null;
     this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -40,7 +40,8 @@ export class UI {
     for (let i = 0; i < n; i++) { const it = this.items[i]; if (inp.mouseX >= it.x && inp.mouseX <= it.x + it.w && inp.mouseY >= it.y && inp.mouseY <= it.y + it.h) { this.focus = i; this.hoverId = it.id; } }
     if (this.focus >= n) this.focus = n - 1;
     this.focusById.set(this.screenKey, this.focus);
-    if ((inp.confirm && !this.textFocusId) || (inp.click && this.hoverId)) this.activated = this.items[this.focus]?.id ?? null;
+    // a click activates what lies under the pointer, confirm activates the focused item; the widgets see it in the next frame
+    this.activated = (inp.confirm && !this.textFocusId) || (inp.click && this.hoverId) ? (this.items[this.focus]?.id ?? null) : null;
   }
 
   private register(id: string, x: number, y: number, w: number, h: number): boolean {

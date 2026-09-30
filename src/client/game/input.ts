@@ -52,14 +52,22 @@ export class Input {
     });
     window.addEventListener('keyup', (e) => this.keys.delete(e.code));
     window.addEventListener('blur', () => this.keys.clear());
+    // pointer position in UI-canvas space: the canvas may sit with an offset or scaled inside a host page (embedded build)
+    const toCanvas = (e: { clientX: number; clientY: number }) => {
+      const r = el.getBoundingClientRect();
+      const sx = r.width > 0 ? window.innerWidth / r.width : 1, sy = r.height > 0 ? window.innerHeight / r.height : 1;
+      this.mouseX = (e.clientX - r.left) * sx; this.mouseY = (e.clientY - r.top) * sy;
+    };
     el.addEventListener('mousemove', (e) => {
-      this.mouseX = e.clientX; this.mouseY = e.clientY;
+      toCanvas(e);
       if (document.pointerLockElement === el) { this.dx += e.movementX; this.dy += e.movementY; }
     });
-    el.addEventListener('mousedown', (e) => {
+    // pointerdown covers mouse, pen and touch (a tap has no hover before it, so the position is taken here)
+    el.addEventListener('pointerdown', (e) => {
+      toCanvas(e);
       if (e.button === 0) this.clicked = true;
       if (e.button === 2) this.rightClicked = true;
-      if (this.wantLock && document.pointerLockElement !== el && e.button === 0) el.requestPointerLock?.();
+      if (this.wantLock && e.pointerType === 'mouse' && document.pointerLockElement !== el && e.button === 0) el.requestPointerLock?.();
     });
     el.addEventListener('contextmenu', (e) => e.preventDefault());
     el.addEventListener('wheel', (e) => { this.scrollAcc += Math.sign(e.deltaY); }, { passive: true });
